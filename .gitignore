@@ -1,0 +1,13 @@
+*
+!inc/
+!**/inc/**
+!lib/
+!lib/*
+!src/
+!**/src/**
+!*.c
+!*.h
+!Makefile
+!.gitignore
+*_backup.c
+test*.c
