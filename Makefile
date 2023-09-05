@@ -12,7 +12,7 @@ SRC_MAN =
 # Bonus source files
 SRC_C_B =
 SRC_R_B	=
-SRC_BNS =
+SRC_BNS = opengl
 
 # Directories
 SRC_DIR = src
@@ -24,6 +24,7 @@ PARSR_D = parser
 MATHS_D = maths
 UTILS_D =
 
+OPNGL_D = opengl
 CBACK_D =
 RENDR_D = renderer
 MAN_DIR = .
@@ -65,7 +66,7 @@ INCL	= inc
 VPATH	+= %.c $(SRC_DIR)
 VPATH	+= %.c $(addprefix $(SRC_DIR)/, $(PARSR_D) $(MATHS_D) $(UTILS_D) \
 				 $(RENDR_D)/$(MAN_DIR) $(RENDR_D)/$(BNS_DIR) \
-				 $(CBACK_D)/$(MAN_DIR) $(CBACK_D)/$(BNS_DIR))
+				 $(CBACK_D)/$(MAN_DIR) $(OPNGL_D)/$(BNS_DIR))
 
 CC		= cc
 FLAGS	= -g -O0 #-Wall -Wextra -Werror
@@ -91,7 +92,8 @@ ${NAME_M}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_M}
 ${OBJ_DIR}/%.o: %.c | ${OBJ_DIR}
 			@echo "    $<"
 			@${CC} ${FLAGS} -c $< -o $@ -I ${INCL} -I ${LIB_DIR}/${FPRNF_D}/${INCL} \
-				-I ${LIB_DIR}/${LIBFT_D}/${INCL} -I ${LIB_DIR}/${MLX42_D}/include
+				-I ${LIB_DIR}/${LIBFT_D}/${INCL} -I ${LIB_DIR}/${MLX42_D}/include \
+				-I lib/stb_image
 
 ${OBJ_DIR}:
 			@mkdir -p ${OBJ_DIR}
@@ -122,10 +124,10 @@ fclean:		clean
 
 bonus:		${NAME_B}
 
-${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_B}
+${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS_B}
 			@${RM} ${OBJS_M}
 			@echo "    ${NAME_B}"
-			@${CC} ${FLAGS} ${OBJS} ${OBJS_B} ${MLX42_L} ${LIBFT_L} ${FPRNF_L} -o ${NAME_B} ${OPTS}
+			@${CC} ${FLAGS} ${OBJS_B} ${MLX42_L} ${LIBFT_L} ${FPRNF_L} -o ${NAME_B} ${OPTS}
 
 re:			fclean all
 
