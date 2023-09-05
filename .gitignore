@@ -5,6 +5,8 @@
 !lib/*
 !src/
 !**/src/**
+!res
+!res/**
 !*.c
 !*.h
 !Makefile
