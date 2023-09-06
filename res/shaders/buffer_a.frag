@@ -167,6 +167,30 @@ vec3 checkerboard(vec2 uv) {
 	return col;
 }
 
+vec3 doBump(vec3 pos, vec3 nor, float signal, float scale) {
+	vec3 dpdx = dFdx(pos);
+	vec3 dpdy = dFdy(pos);
+
+	float dbdx = dFdx(signal);
+	float dbdy = dFdy(signal);
+
+	vec3  u = cross(dpdy, nor);
+	vec3  v = cross(nor, dpdx);
+	float d = dot(dpdx, u);
+
+	vec3 surfGrad = dbdx * u + dbdy * v;
+	return normalize(abs(d) * nor - sign(d) * scale * surfGrad);
+}
+
+vec3 doBump(vec3 dpdx, vec3 dpdy, vec3 nor, float dbdx, float dbdy, float scale) {
+	vec3  u = cross(dpdy, nor);
+	vec3  v = cross(nor, dpdx);
+	float d = dot(dpdx, u);
+
+	vec3 surfGrad = dbdx * u + dbdy * v;
+	return normalize(abs(d) * nor - sign(d) * scale * surfGrad);
+}
+
 bool	sphereIntersection(SRay ray, inout SHitRecord rec, vec4 sphere) {
 	// translate to local coordinate
 	vec3	m = ray.ori - sphere.xyz;
@@ -499,7 +523,7 @@ void sceneIntersection(SRay ray, inout SHitRecord rec, out SMaterial mat, inout 
 		vec3	v1	= vec3(   0.00f,   0.00f,   2.50f) + pos;
 		if (quadIntersection(ray, rec, pos, v0, v1)) {
 			mat = materialZero();
-			mat.emissive = vec3(1.0f, 0.9f, 0.7f) * 25.0f;
+			mat.emissive = vec3(1.0f, 0.9f, 0.5f) * 25.0f;
 		}
 	}
 
@@ -533,61 +557,95 @@ void sceneIntersection(SRay ray, inout SHitRecord rec, out SMaterial mat, inout 
 		mat.specularColor = texture(earth, rec.uv + vec2(0.25f, 0.0f)).rgb;
 	}
 
-	if (sphereIntersection(ray, rec, vec4(9.0f, 9.0f, 20.0f, 3.0f) + sceneTranslation4)) {
-		mat = materialZero();
-		mat.albedo = checkerboard(64.0f * rec.uv);
+	// if (sphereIntersection(ray, rec, vec4(9.0f, 9.0f, 20.0f, 3.0f) + sceneTranslation4)) {
+	// 	mat = materialZero();
+	// 	mat.albedo = checkerboard(64.0f * rec.uv);
+	// }
+	{
+		mat4	txi = translate( 9.0f,  9.0f,  20.0f + sceneTranslation.z) * rotationAxisAngle(vec3(0.0f, 1.0f, 0.0f),  c_pi / 3.0f);
+		mat4	txx = rotationAxisAngle(vec3(0.0f, 1.0f, 0.0f), -c_pi / 3.0f) * translate(-9.0f, -9.0f, -20.0f - sceneTranslation.z);
+		if (boxIntersection(ray, rec, txx, txi, vec3(2.0f))) {
+			mat = materialZero();
+			mat.albedo = checkerboard(7.5f * rec.uv);
+		}
 	}
 
-	// // shiny green balls of varying specularRoughnesses
-	// {
-	// 	if (sphereIntersection(ray, rec, vec4(-10.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
-	// 		mat = materialZero();
-	// 		mat.albedo = vec3(1.0f, 1.0f, 1.0f);
-	// 		mat.specularChance = 1.0f;
-	// 		mat.specularRoughness = 0.0f;
-	// 		mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
-	// 	}
+	// shiny green balls of varying specularRoughnesses
+	{
+		if (sphereIntersection(ray, rec, vec4(-10.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
+			mat = materialZero();
+			mat.albedo = vec3(1.0f, 1.0f, 1.0f);
+			mat.specularChance = 1.0f;
+			mat.specularRoughness = 0.0f;
+			mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
+		}
 
-	// 	if (sphereIntersection(ray, rec, vec4(-5.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
-	// 		mat = materialZero();
-	// 		mat.albedo = vec3(1.0f, 1.0f, 1.0f);
-	// 		mat.specularChance = 1.0f;
-	// 		mat.specularRoughness = 0.25f;
-	// 		mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
-	// 	}
+		if (sphereIntersection(ray, rec, vec4(-5.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
+			mat = materialZero();
+			mat.albedo = vec3(1.0f, 1.0f, 1.0f);
+			mat.specularChance = 1.0f;
+			mat.specularRoughness = 0.25f;
+			mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
+		}
 
-	// 	if (sphereIntersection(ray, rec, vec4(0.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
-	// 		mat = materialZero();
-	// 		mat.albedo = vec3(1.0f, 1.0f, 1.0f);
-	// 		mat.specularChance = 1.0f;
-	// 		mat.specularRoughness = 0.5f;
-	// 		mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
-	// 	}
+		if (sphereIntersection(ray, rec, vec4(0.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
+			mat = materialZero();
+			mat.albedo = vec3(1.0f, 1.0f, 1.0f);
+			mat.specularChance = 1.0f;
+			mat.specularRoughness = 0.5f;
+			mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
+		}
 
-	// 	if (sphereIntersection(ray, rec, vec4(5.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
-	// 		mat = materialZero();
-	// 		mat.albedo = vec3(1.0f, 1.0f, 1.0f);
-	// 		mat.specularChance = 1.0f;
-	// 		mat.specularRoughness = 0.75f;
-	// 		mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
-	// 	}
+		if (sphereIntersection(ray, rec, vec4(5.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
+			mat = materialZero();
+			mat.albedo = vec3(1.0f, 1.0f, 1.0f);
+			mat.specularChance = 1.0f;
+			mat.specularRoughness = 0.75f;
+			mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
+		}
 
-	// 	if (sphereIntersection(ray, rec, vec4(10.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
-	// 		mat = materialZero();
-	// 		mat.albedo = vec3(1.0f, 1.0f, 1.0f);
-	// 		mat.specularChance = 1.0f;
-	// 		mat.specularRoughness = 1.0f;
-	// 		mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
-	// 	}
-	// }
+		if (sphereIntersection(ray, rec, vec4(10.0f, 0.0f, 23.0f, 1.75f) + sceneTranslation4)) {
+			mat = materialZero();
+			mat.albedo = vec3(1.0f, 1.0f, 1.0f);
+			mat.specularChance = 1.0f;
+			mat.specularRoughness = 1.0f;
+			mat.specularColor = vec3(0.3f, 1.0f, 0.3f);
+		}
+	}
 
-	// if (sphereIntersection(ray, rec, vec4(-9.0f, -9.5f, 20.0f, 3.0f) + sceneTranslation4)) {
-	// 	mat = materialZero();
-	// 	mat.albedo = vec3(0.9f, 0.9f, 0.5f);
-	// 	mat.specularChance = 0.1f;
-	// 	mat.specularRoughness = 0.2f;
-	// 	mat.specularColor = vec3(0.9f, 0.9f, 0.9f);
-	// }
+	if (sphereIntersection(ray, rec, vec4(-8.0f, -8.0f, 18.0f, 4.0f) + sceneTranslation4)) {
+		mat = materialZero();
+		mat.albedo = 0.05f *vec3(0.7f, 0.5f, 0.9f);
+		mat.specularChance = 0.2f;
+		mat.specularColor = vec3(0.7f, 0.5f, 0.9f);
+		mat.IOR = 1.05f;
+		mat.refractionChance = 1.0f;
+		mat.refractionColor = 0.5f * vec3(0.3f, 0.5f, 0.1f);
+
+		// vec3 mate = texture(earth, vec2(0.0f ,0.0f) + rec.uv).rgb;
+		// float signal = dot(mate, vec3(0.33));
+		// rec.normal = doBump(ray.ori + rec.dist * ray.dir, rec.normal, signal, 0.15f);
+
+		// computer ray differentials
+		vec2 p = (2.0f * (fragCoord + vec2(1.0f, 0.0f)) - iResolution.xy) / iResolution.y;
+		vec3 ddx_rd = normalize(p.x * vec3(1.0f, 0.0f, 0.0f) + p.y * vec3(0.0f, 1.0f, 0.0f) + 1.5 * vec3(0.0f, 0.0f, 1.0f));
+
+		p = (2.0f * (fragCoord + vec2(0.0f, 1.0f)) - iResolution.xy) / iResolution.y;
+		vec3 ddy_rd = normalize(p.x * vec3(1.0f, 0.0f, 0.0f) + p.y * vec3(0.0f, 1.0f, 0.0f) + 1.5 * vec3(0.0f, 0.0f, 1.0f));
+
+		vec3 pos = ray.ori + rec.dist * ray.dir;
+		vec3 ddx_pos = ray.ori - ddx_rd * dot(ray.ori - pos, rec.normal) / dot(ddx_rd, rec.normal);
+		vec3 ddy_pos = ray.ori - ddy_rd * dot(ray.ori - pos, rec.normal) / dot(ddy_rd, rec.normal);
+		vec3 dposdx = ddx_pos - pos;
+		vec3 dposdy = ddy_pos - pos;
+
+		vec3 mate = texture(earth, vec2(0.0f ,0.0f) + rec.uv).rgb;
+		float signal = dot(mate, vec3(0.33f));
+		float dsignaldx = dot(texture(earth, vec2(-0.005f, 0.0f) + rec.uv).rgb, vec3(0.33f)) - signal;
+		float dsignaldy = dot(texture(earth, vec2(0.0f, -0.005f) + rec.uv).rgb, vec3(0.33f)) - signal;
+
+		rec.normal = doBump(dposdx, dposdy, rec.normal, dsignaldx, dsignaldy, 0.3f);
+	}
 	// if (cylinderIntersection(ray, rec, vec3(-8.0f, -9.0f, 20.0f) + sceneTranslation, vec3(0.0f, -1.0f, -1.0f), 2.0f, 2.5f)) {
 	// 	mat = materialZero();
 	// 	mat.albedo = vec3(0.9f, 0.9f, 0.3f) * checkerboard(8.0f * rec.uv);
