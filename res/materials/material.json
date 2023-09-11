@@ -1,0 +1,20 @@
+{
+	"obj1"	:
+	{
+		"albedo"				: "{r,g,b [0, 255] | path_to_texture(:u_offset,v_offset { [-1, 1] | (-inf, inf) }) | checkered(:u_scale,v_scale { [0, inf) | (-inf, inf) }) }",
+		"emmisive"				: "{r,g,b [0, 255] | path_to_texture(:u_offset,v_offset { [-1, 1] | (-inf, inf) }) | checkered(:u_scale,v_scale { [0, inf) | (-inf, inf) }) }",
+		"specularColor"			: "{r,g,b [0, 255] | path_to_texture(:u_offset,v_offset { [-1, 1] | (-inf, inf) }) | checkered(:u_scale,v_scale { [0, inf) | (-inf, inf) }) }",
+		"refractionColor"		: "{r,g,b [0, 255] | path_to_texture(:u_offset,v_offset { [-1, 1] | (-inf, inf) }) | checkered(:u_scale,v_scale { [0, inf) | (-inf, inf) }) }",
+		"normalMap"				: "path_to_texture:(u_offset,v_offset { [-1, 1] | (-inf, inf) } ,) scale [0, inf) )",
+		"intensity"				: "[0, inf)",
+		"specularChance"		: "[0, 1]",
+		"specularRoughness"		: "[0, 1]",
+		"IOR"					: "[1, inf)",
+		"refractionChance"		: "[0, 1]",
+		"refractionRoughness"	: "[0, 1]"
+	},
+	"obj2"	:
+	{
+		"albedo"	: "r,g,b"
+	}
+}

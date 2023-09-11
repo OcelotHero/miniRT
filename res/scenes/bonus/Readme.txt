@@ -1,0 +1,88 @@
+The color attribute can either accept normal r,g,b values or path to json file
+describing the material properties as described in Readme found in materials.
+If only r,g,b values is available, it is equivalent to having a json file
+containing only the `albedo` key with the corresponding r,g,b value, i.e:
+	{ "albedo"	: "r,g,b"}
+
+If file is not found CHOOSE to either return error or set the value to default
+following the rules listed in Readme found in materials. (the subject pdf
+requires error to be returned in case the r,g,b values are not found)
+
+//------------------------------------------------------------------------------
+Valid attribute formating and their corresponding values for the new geometry:
+	bx: BOX
+		x,y,z	- position vector
+			-> each value can be within the range of (-inf, inf)
+		x,y,z	- rotation axis vector
+			-> each value can only be within the range of [-1, 1], i.e. normalized coordinate
+		theta	- angle
+			-> value can be within the range of (-inf, inf) given in degrees
+		(CHOOSE EITHER)
+		~	x_dim,y_dim,z_dim	- dim vector
+				-> each value can be within the range of (-inf, inf)
+		~	x_dim
+				-> value can be within the range of (-inf, inf)
+			y_dim
+				-> value can be within the range of (-inf, inf)
+			z_dim
+				-> value can be within the range of (-inf, inf)
+		color or path_to_json as aforementioned
+
+	tr: TRIAGL
+		x,y,z	- position vector
+			-> each value can be within the range of (-inf, inf)
+		x,y,z	- first vertex position vector
+			-> each value can be within the range of (-inf, inf)
+		(CHOOSE EITHER)
+		~	x,y,z	- second vertex posiiton vector
+				-> each value can be within the range of (-inf, inf)
+		~	x
+				-> value can be within the range of (-inf, inf)
+			y
+				-> value can be within the range of (-inf, inf)
+			z
+				-> value can be within the range of (-inf, inf)
+		color or path_to_json as aforementioned
+
+	qd: QUAD
+		x,y,z	- position vector
+			-> each value can be within the range of (-inf, inf)
+		x,y,z	- first major axis position vector
+			-> each value can be within the range of (-inf, inf)
+		(CHOOSE EITHER)
+		~	x,y,z	- second major axis posiiton vector
+				-> each value can be within the range of (-inf, inf)
+		~	x
+				-> value can be within the range of (-inf, inf)
+			y
+				-> value can be within the range of (-inf, inf)
+			z
+				-> value can be within the range of (-inf, inf)
+		color or path_to_json as aforementioned
+
+	ds:	DISK
+		x,y,z	- position vector
+			-> each value can be within the range of (-inf, inf)
+		x,y,z	- normal vector
+			-> each value can only be within the range of [-1, 1], i.e. normalized coordinate
+		r		- radius
+			-> value can only be within the range of [0, inf)
+
+//------------------------------------------------------------------------------
+Memory layout packing for attribute values stored in t_object param array
+(the 4 values after the first 2 vectors):
+	bx: BOX
+		theta {x_dim,y_dim,z_dim | x_dim y_dim z_dim} (CHOOE EITHER FORMAT)
+			-> |theta		|x_dim		|y_dim		|z_dim		|
+
+	tr: TRIAGL
+		{x,y,z | x y z} (CHOOE EITHER FORMAT)
+			-> |x			|y			|z			|.			|
+
+	qd: QUAD
+		{x,y,z | x y z} (CHOOE EITHER FORMAT)
+			-> |x			|y			|z			|.			|
+
+	ds: DISK
+		radius
+			-> |radius		|y			|z			|.			|
