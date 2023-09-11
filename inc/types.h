@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/08/17 22:19:59 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/11 18:36:49 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,14 @@ typedef struct	s_ray {
 typedef struct	s_object
 {
 	int		type;
+	t_vec3	pos;
+	t_vec3	axis;
+	t_vec3	color;
 	float	param[4];
-	t_vec3	vectors[3];
 }	t_object;
 
-typedef	struct	s_scene 
+# ifndef BONUS
+typedef	struct	s_scene
 {
 	int			n_obj;
 	t_object	ambient;
@@ -83,5 +86,30 @@ typedef	struct	s_scene
 	t_object	light;
 	t_object	objects[MAX_OBJ];
 }	t_scene;
+# else
+typedef	struct	s_scene
+{
+	int			n_obj;
+	int			n_light;
+	t_object	ambient;
+	t_object	camera;
+	t_object	pointLights[MAX_OBJ];
+	t_object	objects[MAX_OBJ];
+}	t_scene;
+
+typedef struct	s_material
+{
+	t_vec4	albedo;
+	t_vec4	emissive;
+	t_vec4	specular_color;
+	t_vec4	refraction_color;
+	t_vec4	normal_map;
+	float	intensity;
+	float	specular_chance;
+	float	specular_roughness;
+	float	IOR;
+	float	refraction_chance;
+	float	refraction_roughness;
+}	t_material;
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 15:18:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/08/12 09:23:13 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/11 09:41:52 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-/**
- * Performs similarly to atof function, whereby it converts the initial portion
- * of valid numerical string pointed to by str to float and returning the number
- * of characters parsed. The converted value is stored into the memory buffer
- * pointed to by val.
- *
- * @param	str	String to be converted to float
- * @param	val	Pointer to store the converted value
- * @return	The number of characters parsed from the string
- */
 int	n_atof(char *str, float *val)
 {
 	int		i;
@@ -57,22 +47,6 @@ int	n_atof(char *str, float *val)
 	return (i);
 }
 
-/**
- * Returns the type of object refered to by the line currently parsed, pointed
- * to by str, by checking the identifier.
- *
- * The following are valid identifiers and its corresponding type:
- * 	A		- AMBI
- * 	C		- CAMERA
- * 	L		- LIGHT
- * 	sp		- SPHERE
- * 	pl		- PLANE
- * 	cy		- CYLND
- * 	default	- INVAL
- *
- * @param	str	The line to be parsed
- * @return	Object type
- */
 int	obj_type(char *str)
 {
 	if (!ft_strncmp(str, "A", 1) && (*(str + 1) == ' ' || *(str + 1) == '\t'))
@@ -90,25 +64,6 @@ int	obj_type(char *str)
 	return (INVAL);
 }
 
-/**
- * Saves the numerical string pointed to by str to memory buffer pointed to by
- * mem, checking the validity of the value returned depending on the type of
- * attribute to be stored. Returns the number of characters parsed from the
- * string if the value stored in the memory buffer is valid, -1 otherwise.
- *
- * The following are the attributes and its valid value range:
- * 	A_PCNT	- percentage value 		[0, 1]
- * 	A_FOV	- field of view 		[0, 180]
- * 	A_NORM	- normalized value 		[-1, 1]
- * 	A_COL	- rgb value				[0, 255]
- * 	A_POS	- position vector		(-inf, inf)
- * 	A_FLTx	- floating point number	(-inf, inf)
- *
- * @param	str		The line to be parsed
- * @param	mem		The memory buffer to store the value to
- * @param	type	The type of attribute to be stored
- * @return	The number of characters parsed or -1 on error
- */
 int	populate_buffer(char *str, float *mem, int type)
 {
 	int	n;
@@ -122,62 +77,35 @@ int	populate_buffer(char *str, float *mem, int type)
 	return (n);
 }
 
-/**
- * Saves object properties to t_object struct by parsing the given string
- * pointed to by str. Returns 0 if the line given is in a valid format, 1
- * otherwise.
- *
- * @param	obj		Memory buffer to store the object properties
- * @param	type	The type of object to store
- * @param	str		The line to be parsed
- * @return	Whether the operation was successful
- */
 int	save_object(t_object *object, int type, char *str)
 {
-	int		i;
-	int		j;
-	int		n;
+	int		i[3];
 	float	*mem;
 
 	object->type = type;
-	i = -1;
-	while (++i < 7)
+	i[0] = -1;
+	while (++i[0] < 7)
 	{
-		j = 3;
-		while ((type & (1 << i)) && (--j >= 0))
+		if (!(type & (1 << i[0])))
+			continue ;
+		i[1] = 3;
+		while (--i[1] >= 0)
 		{
-			n = ((1 << i) == A_NORM) + ((1 << i) == A_COL) * 2;
-			mem = &object->vectors[n].e[2 - j];
-			if ((1 << i) & (A_PCNT | A_FLT1 | A_FLT2 | A_FOV))
-				mem = &object->param[i - 2];
-			j -= j * (((A_PCNT | A_FLT1 | A_FLT2 | A_FOV) & (1 << i)) > 0);
-			n = populate_buffer(str, mem, (1 << i));
-			if (n == -1 || (j > 0 && str[n] != ','))
+			i[2] = ((1 << i[0]) == A_NORM) + ((1 << i[0]) == A_COL) * 2;
+			mem = &((*(&(object->pos) + i[2])).e[2 - i[1]]);
+			if ((1 << i[0]) & (A_PCNT | A_FLT1 | A_FLT2 | A_FOV))
+				mem = &object->param[i[0] - 2];
+			i[1] -= i[1] * (((A_PCNT | A_FLT1 | A_FLT2 | A_FOV)
+					& (1 << i[0])) > 0);
+			i[2] = populate_buffer(str, mem, (1 << i[0]));
+			if (i[2] == -1 || (i[1] > 0 && str[i[2]] != ','))
 				return (1);
-			str += n + (n > 0);
+			str += i[2] + (i[2] > 0);
 		}
 	}
 	return (0);
 }
 
-/**
- * Saves objects to t_scene struct by parsing the given string pointed to by
- * str, skipping first any leading whitespaces before parsing the line. Returns
- * 0 if the line parsed if valid, 1 otherwise.
- *
- * The following are valid object types:
- * 	AMBI	-	ambient light
- * 	CAMERA	-	camera
- * 	LIGHT	-	point light
- * 	SPHERE	-	sphere
- * 	PLANE	-	plane
- * 	CYLND	-	cylinder
- *
- * @param	scene	Memory buffer to store the objects and their corresponding
- * 					properties
- * @param	str		The line to be parsed
- * @return	Whether the operation was successful
- */
 int	save_objects(t_scene *scene, char *str)
 {
 	int	type;

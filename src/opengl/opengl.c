@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/08/26 23:59:08 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/11 13:21:10 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,13 @@ uint32_t	create_shader_program(const char *vert, const char *frag)
 #  define DENSITY 1.0f
 # endif
 
+void	print_int_info(char *format, GLenum pname) {
+	int	data;
+
+	glGetIntegerv(pname, &data);
+	printf(format, data);
+}
+
 int main()
 {
 	int width;
@@ -156,27 +163,21 @@ int main()
 		exit(-1);
 	}
 
-	int	texture_units;
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texture_units);
-	printf("Max accessible texture per stage: %d\n", texture_units);
+	// prints hardware information
+	printf("Renderer: %s\n", glGetString(GL_RENDERER)); 				// get renderer string
+	printf("OpenGL version supported %s\n", glGetString(GL_VERSION));	// version as a string
 
-	const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
-	const GLubyte* version = glGetString(GL_VERSION); // version as a string
-	printf("Renderer: %s\n", renderer);
-	printf("OpenGL version supported %s\n", version);
-
-	// GLint no_of_extensions = 0;
-	// glGetIntegerv(GL_NUM_EXTENSIONS, &no_of_extensions);
-	// printf("Number of available extensions %d\n", no_of_extensions);
-	// for (int i = 0; i < no_of_extensions; ++i)
-	// 	printf("\t%s\n", glGetStringi(GL_EXTENSIONS, i));
+	print_int_info("Max accessible texture per stage: %d\n", GL_MAX_TEXTURE_IMAGE_UNITS);
+	print_int_info("Maximum nr of vertex attributes supported: %d\n", GL_MAX_VERTEX_ATTRIBS);
+	print_int_info("Maximum nr of UBO bindings supported: %d\n", GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
+	print_int_info("Maximum size per UBO: %d\n", GL_MAX_UNIFORM_BLOCK_SIZE);
+	print_int_info("UBO alignment: %d\n", GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT);
 
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	int samples = 4;
 	float quadVerts[] = {
 		-1.0, -1.0,     0.0, 0.0,
 		-1.0, 1.0,      0.0, 1.0,
@@ -325,6 +326,33 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, earth);
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+
+	uint32_t	ubo_example_block;
+	glGenBuffers(1, &ubo_example_block);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo_example_block);
+	glBufferData(GL_UNIFORM_BUFFER, 80, NULL, GL_STATIC_DRAW);
+
+	uint32_t	point_lights_index = glGetUniformBlockIndex(buf_a_program, "PointLights");
+	glUniformBlockBinding(buf_a_program, point_lights_index, 0);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_example_block);
+
+	int	n_light = 1;
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 4, &n_light);
+
+	typedef struct s_point_light {
+		float	pos[3];
+		float	pad0;
+		float	emissive[3];
+		float	intensity;
+	} t_point_light;
+
+	t_point_light point_light = {.pos = {-8.0f, 12.0f, 30.0f}, .emissive = {1.0f, 0.9f, 0.5f}, .intensity = 0.9f};
+	glBufferSubData(GL_UNIFORM_BUFFER, 16, sizeof(point_light), &point_light);
+
+	point_light.pos[0] = 0.0f;
+	glBufferSubData(GL_UNIFORM_BUFFER, 48, sizeof(point_light), &point_light);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	while (!glfwWindowShouldClose(window))
 	{
