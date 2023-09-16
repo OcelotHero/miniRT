@@ -6,14 +6,14 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/11 18:36:49 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/12 09:10:00 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPES_H
 # define TYPES_H
 
-# define MAX_OBJ	256
+# define MAX_SIZE	256
 
 # define A_POS	1 << 0
 # define A_NORM	1 << 1
@@ -68,6 +68,7 @@ typedef struct	s_ray {
 	t_vec3	dir;
 }	t_ray;
 
+# ifndef BONUS
 typedef struct	s_object
 {
 	int		type;
@@ -77,26 +78,15 @@ typedef struct	s_object
 	float	param[4];
 }	t_object;
 
-# ifndef BONUS
 typedef	struct	s_scene
 {
 	int			n_obj;
 	t_object	ambient;
 	t_object	camera;
 	t_object	light;
-	t_object	objects[MAX_OBJ];
+	t_object	objects[MAX_SIZE];
 }	t_scene;
 # else
-typedef	struct	s_scene
-{
-	int			n_obj;
-	int			n_light;
-	t_object	ambient;
-	t_object	camera;
-	t_object	pointLights[MAX_OBJ];
-	t_object	objects[MAX_OBJ];
-}	t_scene;
-
 typedef struct	s_material
 {
 	t_vec4	albedo;
@@ -110,6 +100,29 @@ typedef struct	s_material
 	float	IOR;
 	float	refraction_chance;
 	float	refraction_roughness;
+	float	pad[2];
 }	t_material;
+
+typedef struct	s_object
+{
+	int			type;
+	int			pad[3];
+	t_vec4		pos;
+	t_vec4		axis;
+	float		param[4];
+}	t_object;
+
+typedef	struct	s_scene
+{
+	int			n_obj;
+	int			pad[3];
+	t_object	camera;
+	t_object	objects[MAX_SIZE];
+	t_material	materials[MAX_SIZE];
+	int			n_light;
+	t_object	ambient;
+	t_object	lights[MAX_SIZE];
+}	t_scene;
+# endif
 
 #endif

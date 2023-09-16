@@ -68,12 +68,27 @@ Valid attribute formating and their corresponding values for the new geometry:
 		r		- radius
 			-> value can only be within the range of [0, inf)
 
+!!!SPECIAL CASE!!!
+	A: AMBI
+		intensity	- light intensity
+			-> value can only be within the range of [0, 1]
+		r,g,b		- light color
+			-> each value can only be within the range of [0, 255]
+
+	l: LIGHT
+		x,y,z		- position vector
+			-> each value can be within the range of (-inf, inf)
+		intensity	- light intensity
+			-> value can only be within the range of [0, 1]
+		r,g,b		- light color
+			-> each value can only be within the range of [0, 255]
+
 //------------------------------------------------------------------------------
 Memory layout packing for attribute values stored in t_object param array
 (the 4 values after the first 2 vectors):
 	bx: BOX
 		theta {x_dim,y_dim,z_dim | x_dim y_dim z_dim} (CHOOE EITHER FORMAT)
-			-> |theta		|x_dim		|y_dim		|z_dim		|
+			-> |x_dim		|y_dim		|z_dim		|theta		|
 
 	tr: TRIAGL
 		{x,y,z | x y z} (CHOOE EITHER FORMAT)
@@ -85,4 +100,14 @@ Memory layout packing for attribute values stored in t_object param array
 
 	ds: DISK
 		radius
-			-> |radius		|y			|z			|.			|
+			-> |radius		|.			|.			|.			|
+
+!!!SPECIAL CASE!!!
+	A: AMBI
+		intensity	r,g,b
+			-> |r			|g			|b			|intensity	|
+
+	l: light
+		intensity	r,g,b
+			-> |r			|g			|b			|intensity	|
+
