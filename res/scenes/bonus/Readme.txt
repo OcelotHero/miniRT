@@ -28,6 +28,19 @@ Valid attribute formating and their corresponding values for the new geometry:
 				-> value can be within the range of (-inf, inf)
 		color or path_to_json as aforementioned
 
+	cn: CONE
+		x,y,z	- position vector
+			-> each value can be within the range of (-inf, inf)
+		x,y,z	- axis vector
+			-> each value can only be within the range of [-1, 1], i.e. normalized coordinate
+		r1		- front cap radius
+			-> value can be within the range of (-inf, inf)
+		r2		- back cap radius
+			-> value can be within the range of (-inf, inf)
+		h		- height
+			-> value can be within the range of (-inf, inf) given in degrees
+		color or path_to_json as aforementioned
+
 	tr: TRIAGL
 		x,y,z	- position vector
 			-> each value can be within the range of (-inf, inf)
@@ -90,6 +103,10 @@ Memory layout packing for attribute values stored in t_object param array
 		theta {x_dim,y_dim,z_dim | x_dim y_dim z_dim} (CHOOE EITHER FORMAT)
 			-> |x_dim		|y_dim		|z_dim		|theta		|
 
+	cn:	CONE
+		r1	r2	h
+			-> |r1			|r2			|h1			|.			|
+
 	tr: TRIAGL
 		{x,y,z | x y z} (CHOOE EITHER FORMAT)
 			-> |x			|y			|z			|.			|
@@ -101,6 +118,8 @@ Memory layout packing for attribute values stored in t_object param array
 	ds: DISK
 		radius
 			-> |radius		|.			|.			|.			|
+
+	. - indicates padding
 
 !!!SPECIAL CASE!!!
 	A: AMBI
