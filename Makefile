@@ -124,10 +124,10 @@ fclean:		clean
 
 bonus:		${NAME_B}
 
-${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS_B}
+${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_B}
 			@${RM} ${OBJS_M}
 			@echo "    ${NAME_B}"
-			@${CC} ${FLAGS} ${OBJS_B} ${MLX42_L} ${LIBFT_L} ${FPRNF_L} -o ${NAME_B} ${OPTS}
+			@${CC} ${FLAGS} ${OBJS} ${OBJS_B} ${MLX42_L} ${LIBFT_L} ${FPRNF_L} -o ${NAME_B} ${OPTS}
 
 re:			fclean all
 

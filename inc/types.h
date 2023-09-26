@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/12 09:10:00 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/26 12:54:59 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,15 +91,15 @@ typedef struct	s_material
 {
 	t_vec4	albedo;
 	t_vec4	emissive;
-	t_vec4	specular_color;
-	t_vec4	refraction_color;
+	t_vec4	spec_color;
+	t_vec4	refr_color;
 	t_vec4	normal_map;
 	float	intensity;
-	float	specular_chance;
-	float	specular_roughness;
+	float	spec_chance;
+	float	spec_roughness;
 	float	IOR;
-	float	refraction_chance;
-	float	refraction_roughness;
+	float	refr_chance;
+	float	refr_roughness;
 	float	pad[2];
 }	t_material;
 

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 15:18:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/11 09:41:52 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/26 12:54:33 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	save_objects(t_scene *scene, char *str)
 		return (save_object(&scene->camera, type, str));
 	if ((type & (LIGHT & ~0xff)) && !scene->light.type)
 		return (save_object(&scene->light, type, str));
-	if ((type & ((SPHERE | PLANE | CYLND) & ~0xff)) && scene->n_obj < MAX_OBJ)
+	if ((type & ((SPHERE | PLANE | CYLND) & ~0xff)) && scene->n_obj < MAX_SIZE)
 		return (save_object(&scene->objects[scene->n_obj++], type, str));
 	return (1);
 }
