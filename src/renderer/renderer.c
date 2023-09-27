@@ -6,40 +6,35 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 12:46:13 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/11 09:39:16 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 09:00:15 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#define	WIDTH 400
 
 #include "MLX42/MLX42.h"
 #include "types.h"
 #include "libft.h"
+#include "maths.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-t_vec3	vec3_elem_op(t_vec3 a, char op, t_vec3 b);
-t_vec3	vec3_scale(float a, t_vec3 v);
-t_vec3	vec3_normalize(t_vec3 a);
-float	vec3_dot(t_vec3 a, t_vec3 b);
-float	vec3_length(t_vec3 a);
+#define WIDTH 400
 
 t_vec3	ray_at(float t, t_ray ray);
 
-int	save_objects(t_scene *scene, char *str);
+int		save_objects(t_scene *scene, char *str);
 
-typedef struct	s_hit_record {
-	bool	front_face;
-    float	t;
+typedef struct s_hit_record
+{
+	float	t;
 	t_vec3	p;
-    t_vec3	normal;
-	t_vec3	color;
+	t_vec3	n;
+	t_vec3	c;
 }	t_hit_record;
 
-typedef struct	s_cam
+typedef struct s_cam
 {
 	float	aspect;
 	int		i_width;
@@ -77,7 +72,7 @@ t_vec3	inter_vec3_clamp(float *inter, t_vec3 v)
 	int	i;
 
 	i = -1;
-	while(++i < 3)
+	while (++i < 3)
 	{
 		if (v.e[i] < inter[0])
 			v.e[i] = inter[0];
@@ -89,10 +84,10 @@ t_vec3	inter_vec3_clamp(float *inter, t_vec3 v)
 
 float	to_gamma(float linear)
 {
-    return sqrt(linear);
+	return (sqrt(linear));
 }
 
-float	randf()
+float	randf(void)
 {
 	return (rand() / (RAND_MAX + 1.0f));
 }
@@ -102,158 +97,150 @@ float	randfi(float min, float max)
 	return (min + (max - min) * randf());
 }
 
-t_vec3	random_unit_vector()
+t_vec3	random_unit_vector(void)
 {
-	float	theta = inter_clamp((float []){-M_PI, M_PI}, randfi(-M_PI, M_PI));
-	float	phi = inter_clamp((float []){-M_PI_2, M_PI_2}, randfi(-M_PI_2, M_PI_2));
+	float	th;
+	float	ph;
 
-	return ((t_vec3){cos(phi) * cos(theta), cos(phi) * sin(theta), sin(phi)});
+	th = randfi(-M_PI, M_PI);
+	ph = randfi(-M_PI_2, M_PI_2);
+	return ((t_vec3){cos(ph) * cos(th), cos(ph) * sin(th), sin(ph)});
 }
 
-t_vec3	random_on_hemisphere(t_vec3 normal) {
-    t_vec3	on_unit_sphere = random_unit_vector();
-	bool	face = vec3_dot(on_unit_sphere, normal) > 0;
+bool	sp_hit(t_ray r, float *t_lim, t_hit_record *rec, t_object *obj)
+{
+	t_vec3	m;
+	float	b;
+	float	c;
+	float	t;
+	float	dis;
 
-	return (vec3_scale((2 * face) - 1, on_unit_sphere));
+	m = vec3_elem_op(r.ori, '-', obj->pos);
+	b = vec3_dot(m, r.dir);
+	c = vec3_dot(m, m) - obj->param[1] * obj->param[1];
+	if (c > 0.0f && b > 0.0f)
+		return (false);
+	dis = b * b - c;
+	if (dis < 0)
+		return (false);
+	t = -b - sqrt(dis);
+	if (t <= t_lim[0] || t_lim[1] <= t)
+		return (false);
+	rec->t = t;
+	rec->p = ray_at(t, r);
+	rec->n = vec3_scale(1.f / obj->param[1],
+			vec3_elem_op(m, '+', vec3_scale(t, r.dir)));
+	rec->c = vec3_scale(1.f / 255.f, obj->color);
+	return (true);
 }
 
-bool	obj_hit(t_ray r, float *r_lim, t_hit_record *rec, t_object *obj)
+bool	pl_hit(t_ray r, float *t_lim, t_hit_record *rec, t_object *obj)
 {
-	if (obj->type & (SPHERE & ~0xff))
+	t_vec3	m;
+	float	a;
+	float	b;
+	float	t;
+
+	m = vec3_elem_op(r.ori, '-', obj->pos);
+	a = vec3_dot(r.dir, obj->axis);
+	b = vec3_dot(m, obj->axis);
+	t = -b / a;
+	if (t <= t_lim[0] || t > t_lim[1])
+		return (false);
+	rec->t = t;
+	rec->p = ray_at(t, r);
+	rec->n = vec3_scale((2 * (vec3_dot(r.dir, obj->axis) < 0)) - 1, obj->axis);
+	rec->c = vec3_scale(1.f / 255.f, obj->color);
+	return (true);
+}
+
+bool	cy_normal(float *in, t_ray r, t_hit_record *rec, t_object *obj)
+{
+	t_vec3	n;
+
+	n = vec3_normalize(obj->axis);
+	if (in[0] < .5f)
 	{
-		t_vec3	oc = vec3_elem_op(r.ori, '-', obj->pos);
-		float	half_b = vec3_dot(oc, r.dir);
-		float	c = vec3_dot(oc, oc) - obj->param[1] * obj->param[1];
-
-		float	dis = half_b * half_b - c;
-		if (dis < 0)
-			return (false);
-
-		float	sqrtd = sqrt(dis);
-		float	root = (-half_b - sqrtd);
-		if (root <= r_lim[0])
-			root = (-half_b + sqrtd);
-		if (root <= r_lim[0] || r_lim[1] <= root)
-			return (false);
-
-		rec->t = root;
-		rec->p = ray_at(root, r);
-		t_vec3	out_normal = vec3_scale(1.f / obj->param[1],
-			vec3_elem_op(oc, '+', vec3_scale(root, r.dir)));
-		rec->front_face = vec3_dot(r.dir, out_normal) < 0;
-		rec->normal = vec3_scale((2 * rec->front_face) - 1, out_normal);
-		rec->color = vec3_scale(1.f / 255.f, obj->color);
-		return (true);
+		rec->t = in[1];
+		rec->p = ray_at(in[1], r);
+		rec->n = vec3_scale(1.f / obj->param[1],
+				vec3_elem_op(vec3_elem_op(rec->p, '-', obj->pos),
+					'+', vec3_scale(-in[2], n)));
+		rec->c = vec3_scale(1.f / 255.f, obj->color);
 	}
-	else if (obj->type & (PLANE & ~0xff))
+	else
 	{
-		t_vec3	oc = vec3_elem_op(r.ori, '-', obj->pos);
-		float	a = vec3_dot(r.dir, obj->axis);
-		float	b = vec3_dot(oc, obj->axis);
-
-		float	root = -b / a;
-		if (root <= r_lim[0] || root > r_lim[1])
-			return (false);
-
-		rec->t = root;
-		rec->p = ray_at(root, r);
-		rec->front_face = vec3_dot(r.dir, obj->axis) < 0;
-		rec->normal = vec3_scale((2 * rec->front_face) - 1, obj->axis);
-		rec->color = vec3_scale(1.f / 255.f, obj->color);
-		return (true);
+		rec->t = in[1];
+		rec->p = ray_at(in[1], r);
+		rec->n = vec3_scale((in[2] > 0) - (in[2] < 0), n);
+		rec->c = vec3_scale(1.f / 255.f, obj->color);
 	}
-	else if (obj->type & (CYLND & ~0xff))
-	{
-		t_vec3	nv = vec3_normalize(obj->axis);
-		t_vec3	oc = vec3_elem_op(r.ori, '-', obj->pos);
-		float	nvrd = vec3_dot(nv, r.dir);
-		float	nvoc = vec3_dot(nv, oc);
-		float	a = 1.f - nvrd * nvrd;
-		float	half_b = vec3_dot(oc, r.dir) - nvoc * nvrd;
-		float	c = vec3_dot(oc, oc) - nvoc * nvoc - obj->param[1] * obj->param[1];
-		float	dis = half_b * half_b - a * c;
-		if (dis < 0)
-			return (false);
+	return (true);
+}
 
-		float	sqrtd = sqrt(dis);
-		float	root = (-half_b - sqrtd) / a;
-		if (root <= r_lim[0])
-			root = (-half_b + sqrtd) / a;
-		if (root <= r_lim[0] || root >= r_lim[1])
-			return (false);
+bool	cy_hit(t_ray r, float *t_lim, t_hit_record *rec, t_object *obj)
+{
+	t_vec3	n;
+	t_vec3	m;
+	float	*d;
+	float	*a;
+	float	res[3];
 
-		float	h = nvoc + root * nvrd;
-		if (fabs(h) <= obj->param[2])
-		{
-			rec->t = root;
-			rec->p = ray_at(root, r);
-			t_vec3	out_normal = vec3_scale(1.f / obj->param[1], vec3_elem_op(vec3_elem_op(oc, '+', vec3_scale(root, r.dir)), '+', vec3_scale(-h, nv)));
-			rec->front_face = vec3_dot(r.dir, out_normal) < 0;
-			rec->normal = vec3_scale((2 * rec->front_face) - 1, out_normal);
-			rec->color = vec3_scale(1.f / 255.f, obj->color);
-			return (true);
-		}
-
-		root = (((h > 0) - (h <= 0)) * obj->param[2] - nvoc) / nvrd;
-		if (fabs(half_b + a * root) >= sqrtd || root <= r_lim[0] || root >= r_lim[1])
-			return (false);
-
-		rec->t = root;
-		rec->p = ray_at(root, r);
-		t_vec3	out_normal = vec3_scale((float)((h > 0) - (h < 0)), nv);
-		rec->front_face = vec3_dot(r.dir, out_normal) < 0;
-		rec->normal = vec3_scale((2 * rec->front_face) - 1, out_normal);
-		rec->color = vec3_scale(1.f / 255.f, obj->color);
-		return (true);
-
-		// t_vec3	oc1 = vec3_elem_op(r.ori, '-', vec3_elem_op(obj->pos, '+', vec3_scale(obj->param[2], nv)));
-		// float	t1 = -vec3_dot(nv, oc1) / vec3_dot(r.dir, nv);
-		// t_vec3	oc2 = vec3_elem_op(r.ori, '-', vec3_elem_op(obj->pos, '+', vec3_scale(-obj->param[2], nv)));
-		// float	t2 = -vec3_dot(nv, oc2) / vec3_dot(r.dir, nv);
-		// if ((t1 <= r_lim[0] && t2 <= r_lim[0]) || (t1 >= r_lim[1] && t2 >= r_lim[1]))
-		// 	return (false);
-
-		// float	t = t1;
-		// oc = oc1;
-		// h = 1;
-		// if ((t2 < t && t2 > r_lim[0]) || t <= r_lim[0])
-		// {
-		// 	oc = oc2;
-		// 	t = t2;
-		// 	h = -1;
-		// }
-		// t_vec3	p = vec3_elem_op(oc, '+', vec3_scale(t, r.dir));
-		// if (vec3_dot(p, p) > (obj->param[1] * obj->param[1]))
-		// 	return (false);
-
-		// rec->t = t;
-		// rec->p = ray_at(t, r);
-		// t_vec3	out_normal = vec3_scale(h, nv);
-		// rec->front_face = vec3_dot(r.dir, out_normal) < 0;
-		// rec->normal = vec3_scale((2 * rec->front_face) - 1, out_normal);
-		// return (true);
-	}
+	n = vec3_normalize(obj->axis);
+	m = vec3_elem_op(r.ori, '-', obj->pos);
+	d = (float []){vec3_dot(n, r.dir), vec3_dot(n, m)};
+	a = (float []){1.f - d[0] * d[0], vec3_dot(m, r.dir) - d[1] * d[0],
+		vec3_dot(m, m) - d[1] * d[1] - obj->param[1] * obj->param[1]};
+	res[0] = a[1] * a[1] - a[0] * a[2];
+	if ((a[2] > 0.0f && a[1] > 0.0f) || res[0] < 0)
+		return (false);
+	res[0] = sqrt(res[0]);
+	res[1] = (-a[1] - res[0]) / a[0];
+	res[2] = d[1] + res[1] * d[0];
+	if (res[1] > t_lim[0] && res[1] < t_lim[1]
+		&& fabs(res[2]) <= obj->param[2])
+		return (cy_normal((float []){0.f, res[1], res[2]}, r, rec, obj));
+	res[1] = (((res[2] > 0) - (res[2] <= 0)) * obj->param[2] - d[1]) / d[0];
+	if (res[1] > t_lim[0] && res[1] < t_lim[1]
+		&& fabs(a[1] + a[0] * res[1]) <= res[0])
+		return (cy_normal((float []){1.f, res[1], res[2]}, r, rec, obj));
 	return (false);
 }
 
-bool	hit(t_ray r, float *r_lim, t_hit_record *rec, t_scene *scene)
+bool	obj_hit(t_ray r, float *t_lim, t_hit_record *rec, t_object *obj)
 {
-	t_hit_record	temp_rec;
-	bool			hit_anything = false;
-	float			closest_so_far = r_lim[1];
-
-	for (int i = 0; i < scene->n_obj; i++) {
-		if (obj_hit(r, (float []){r_lim[0], closest_so_far}, &temp_rec, &scene->objects[i])) {
-			hit_anything = true;
-			closest_so_far = temp_rec.t;
-			*rec = temp_rec;
-		}
-	}
-
-	return hit_anything;
+	if (obj->type & (SPHERE & ~0xff))
+		return (sp_hit(r, t_lim, rec, obj));
+	if (obj->type & (PLANE & ~0xff))
+		return (pl_hit(r, t_lim, rec, obj));
+	if (obj->type & (CYLND & ~0xff))
+		return (cy_hit(r, t_lim, rec, obj));
+	return (false);
 }
 
-t_vec3  r_color(t_ray r, int depth, t_scene *scene)
+bool	hit(t_ray r, float *t_lim, t_hit_record *rec, t_scene *scene)
+{
+	int				i;
+	bool			hit;
+	float			min_t;
+	t_hit_record	t_rec;
+
+	hit = false;
+	min_t = t_lim[1];
+	i = -1;
+	while (++i < scene->n_obj)
+	{
+		if (obj_hit(r, (float []){t_lim[0], min_t}, &t_rec, &scene->objects[i]))
+		{
+			hit = true;
+			min_t = t_rec.t;
+			*rec = t_rec;
+		}
+	}
+	return (hit);
+}
+
+t_vec3 r_color(t_ray r, int depth, t_scene *scene)
 {
 	t_hit_record	rec;
 
@@ -261,10 +248,8 @@ t_vec3  r_color(t_ray r, int depth, t_scene *scene)
 		return ((t_vec3){0.f, 0.f, 0.f});
 
 	if (hit(r, (float []){.001f, 1.f / 0.f}, &rec, scene)) {
-		// t_vec3	dir = vec3_elem_op(rec.normal, '+', random_unit_vector());
-		// return (vec3_elem_op((t_vec3){.5f, .5f, 0.f}, '*', r_color((t_ray){rec.p, dir}, --depth, scene)));
 		t_vec3	l_dir = vec3_normalize(vec3_elem_op(scene->light.pos, '-', rec.p));
-		float	dif = scene->light.param[0] * inter_clamp((float []){0.f, 1.f}, vec3_dot(rec.normal, l_dir));
+		float	dif = scene->light.param[0] * inter_clamp((float []){0.f, 1.f}, vec3_dot(rec.n, l_dir));
 		t_vec3	diff = vec3_scale(dif, vec3_normalize(scene->light.color));
 
 		t_vec3	ambi = vec3_scale(scene->ambient.param[0], vec3_normalize(scene->ambient.color));
@@ -278,7 +263,7 @@ t_vec3  r_color(t_ray r, int depth, t_scene *scene)
 			diff = vec3_scale(0.f, diff);
 		}
 
-		return (vec3_elem_op(vec3_elem_op(ambi, '+', diff), '*', rec.color));
+		return (vec3_elem_op(vec3_elem_op(ambi, '+', diff), '*', rec.c));
 	}
 
 	t_vec3  unit_dir = vec3_normalize(r.dir);

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 08:51:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 06:30:47 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 10:11:06 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	cursor_hook(double xpos, double ypos, void *param)
 	delta = (double []){xpos - rtx->pos[0], ypos - rtx->pos[1]};
 	if (mlx_is_mouse_down(rtx->mlx, MLX_MOUSE_BUTTON_LEFT))
 	{
-		rtx->yaw += M_SENSITIVITY * ((delta[0] > 0) - (delta[0] < 0));
+		rtx->yaw += M_SENSITIVITY * ((delta[0] < 0) - (delta[0] > 0));
 		rtx->pitch += M_SENSITIVITY * ((delta[1] > 0) - (delta[1] < 0));
 		if (fabs(rtx->pitch) > M_PI_2 - 0.01f)
 			rtx->pitch += M_SENSITIVITY * ((rtx->pitch < 0) - (rtx->pitch > 0));

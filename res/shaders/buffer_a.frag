@@ -992,7 +992,7 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 //-----------------------------------------------------
 void	getCameraVectors(out vec3 cameraPos, out vec3 cameraFwd, out vec3 cameraUp, out vec3 cameraRight) {
 	cameraPos = camera.pos;
-	cameraFwd = normalize(camera.axis);
+	cameraFwd = normalize(-camera.axis);
 	cameraRight = normalize(cross(vec3(0.0f, 1.0f, 0.0f), cameraFwd));
 	cameraUp = normalize(cross(cameraFwd, cameraRight));
 }
@@ -1022,8 +1022,8 @@ void main() {
 		screen.y /= aspectRatio;
 
 		// make a ray direction based on camera orientation and field of view angle
-		float cameraDistance = tan((180.0f - camera.param.w) * 0.5f * PI / 180.0f);
-		rayDir = vec3(screen, cameraDistance);
+		float cameraDistance = tan((180.0f - camera.param.w) * PI / 360.0f);
+		rayDir = vec3(screen, -cameraDistance);
 		rayDir = normalize(mat3(cameraRight, cameraUp, cameraFwd) * rayDir);
 	}
 
@@ -1031,13 +1031,6 @@ void main() {
 	vec3 color = vec3(0.0f, 0.0f, 0.0f);
 	for (int index = 0; index < NUM_RENDER; ++index)
 		color += rayColor(SRay(cameraPos, rayDir), rngState) / float(NUM_RENDER);
-
-	// // average the frames together
-	// vec3 lastFrameColor = texture(framebuffer, fragCoord / iResolution).rgb;
-	// color = mix(lastFrameColor, color, 1.0f / float(iFrame + 1));
-
-	// // show the result
-	// fragColor = vec4(color, 1.0f);
 
 	// average the frames together
 	vec4 lastFrameColor = texture(framebuffer, fragCoord / iResolution);

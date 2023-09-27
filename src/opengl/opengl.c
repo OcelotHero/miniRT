@@ -1,26 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   refactored.c                                       :+:      :+:    :+:   */
+/*   opengl.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 06:50:09 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 10:14:50 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_RESIZE_IMPLEMENTATION
-
-#include "stb_image.h"
-#include "stb_image_resize.h"
-#include "MLX42/MLX42_Int.h"
 
 #include "types.h"
 #include "maths.h"
 #include "utils.h"
 #include "callbacks.h"
+
+#include "stb_image.h"
+#include "stb_image_resize.h"
+#include "MLX42/MLX42_Int.h"
 
 #include <glob.h>
 #include <errno.h>
@@ -44,7 +41,7 @@ static uint32_t	create_shader(int32_t type, char *shader_source)
 	shader = glCreateShader(type);
 	if (!shader)
 		return (0);
-	glShaderSource(shader, 1, (const GLchar *const *)&shader_source, NULL);
+	glShaderSource(shader, 1, (const GLchar * const *)&shader_source, NULL);
 	glCompileShader(shader);
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success)
@@ -129,13 +126,13 @@ uint32_t	create_shader_program(const char *vert, const char *frag)
 }
 
 #define SP	0x00800
-#define	CY	0x02000
-#define	CN	0x04000
-#define	BX	0x08000
+#define CY	0x02000
+#define CN	0x04000
+#define BX	0x08000
 #define PL	0x01000
-#define	QD	0x10000
-#define	DS	0x20000
-#define	TR	0x40000
+#define QD	0x10000
+#define DS	0x20000
+#define TR	0x40000
 
 void	set_scene_geometry(t_scene *scene)
 {
@@ -143,61 +140,61 @@ void	set_scene_geometry(t_scene *scene)
 
 	// back wall
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,   0.00f,   5.00f,   0.00f},
-			   {  12.60f,   0.00f,   5.00f,   0.00f},
-			   {   0.00f,  12.60f,   5.00f,   0.00f}};
+		.pos = {   0.00f,   0.00f,  -5.00f,   0.00f},
+			   {  12.60f,   0.00f,  -5.00f,   0.00f},
+			   {   0.00f,  12.60f,  -5.00f,   0.00f}};
 	// floor
 	scene->objects[n++] = (t_object){.type = QD,
 		.pos = {   0.00f, -12.45f,   0.00f,   0.00f},
 			   {  12.60f, -12.45f,   0.00f,   0.00f},
-			   {   0.00f, -12.45f,   5.00f,   0.00f}};
+			   {   0.00f, -12.45f,  -5.00f,   0.00f}};
 	// ceiling
 	scene->objects[n++] = (t_object){.type = QD,
 		.pos = {   0.00f,  12.50f,   0.00f,   0.00f},
-			   {   0.00f,  12.50f,   5.00f,   0.00f},
+			   {   0.00f,  12.50f,  -5.00f,   0.00f},
 			   {  12.60f,  12.50f,   0.00f,   0.00f}};
 	// left wall
 	scene->objects[n++] = (t_object){.type = QD,
 		.pos = { -12.50f,   0.00f,   0.00f,   0.00f},
 			   { -12.50f,  12.60f,   0.00f,   0.00f},
-			   { -12.50f,   0.00f,   5.00f,   0.00f}};
+			   { -12.50f,   0.00f,  -5.00f,   0.00f}};
 	// right wall
 	scene->objects[n++] = (t_object){.type = QD,
 		.pos = {  12.50f,   0.00f,   0.00f,   0.00f},
 			   {  12.50f,  12.60f,   0.00f,   0.00f},
-			   {  12.50f,   0.00f,   5.00f,   0.00f}};
+			   {  12.50f,   0.00f,  -5.00f,   0.00f}};
 	// light
 	scene->objects[n++] = (t_object){.type = QD,
 		.pos = {   0.00f,  12.40f,   0.00f,   0.00f},
 			   {   5.00f,  12.40f,   0.00f,   0.00f},
-			   {   0.00f,  12.40f,   2.50f,   0.00f}};
+			   {   0.00f,  12.40f,  -2.50f,   0.00f}};
 
 	// picture
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,   0.00f,   4.90f,   0.00f},
-			   {   0.00f,   3.50f,   4.90f,   0.00f},
-			   {   5.50f,   0.00f,   4.90f,   0.00f}};
+		.pos = {   0.00f,   0.00f,  -4.90f,   0.00f},
+			   {   0.00f,   3.50f,  -4.90f,   0.00f},
+			   {   5.50f,   0.00f,  -4.90f,   0.00f}};
 	// strip pattern
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,  -8.50f,   4.90f,   0.00f},
-			   {   0.00f,  -5.00f,   4.90f,   0.00f},
-			   {   5.50f,  -8.50f,   4.90f,   0.00f}};
+		.pos = {   0.00f,  -8.50f,  -4.90f,   0.00f},
+			   {   0.00f,  -5.00f,  -4.90f,   0.00f},
+			   {   5.50f,  -8.50f,  -4.90f,   0.00f}};
 
 	// spheres of varying specular roughness
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= { -10.00f,   0.00f,   3.00f,   0.00f},
+		.pos		= { -10.00f,   0.00f,  -3.00f,   0.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {  -5.00f,   0.00f,   3.00f,   0.00f},
+		.pos		= {  -5.00f,   0.00f,  -3.00f,   0.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   0.00f,   0.00f,   3.00f,   0.00f},
+		.pos		= {   0.00f,   0.00f,  -3.00f,   0.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   5.00f,   0.00f,   3.00f,   0.00f},
+		.pos		= {   5.00f,   0.00f,  -3.00f,   0.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {  10.00f,   0.00f,   3.00f,   0.00f},
+		.pos		= {  10.00f,   0.00f,  -3.00f,   0.00f},
 		.param[0]	= 1.75f};
 
 	scene->objects[n++] = (t_object){.type = CY,
@@ -205,18 +202,18 @@ void	set_scene_geometry(t_scene *scene)
 		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
 		.param		= {2.f, 2.5f, 0.f, 0.f}};
 	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f, -10.00f,   1.00f,   0.00f},
+		.pos		= {  -7.00f, -10.00f,  -1.00f,   0.00f},
 		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
 		.param		= {0.5f, 2.f, 0.f, 0.f}};
 	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f, -10.00f,  -1.00f,   0.00f},
+		.pos		= {  -7.00f, -10.00f,   1.00f,   0.00f},
 		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
 		.param		= {0.5f, 2.f, 0.f, 0.f}};
 
 
 	scene->objects[n++] = (t_object){.type = CY,
 		.pos		= {   0.00f,  -8.00f,   0.00f,   0.00f},
-		.axis		= {   0.00f,   0.00f,   0.90f,   0.00f},
+		.axis		= {   0.00f,   0.00f,  -0.90f,   0.00f},
 		.param		= {2.f, 2.5f, 0.f, 0.f}};
 
 	scene->n_obj = n;
@@ -342,8 +339,8 @@ int	move_scene_to_buffer(t_scene *scene)
 
 int	setup_and_load_scene(t_scene *scene)
 {
-	scene->camera = (t_object){.pos		= {0.f, 0.f, -30.f,  0.f},
-							   .axis	= {0.f, 0.f,   1.f,  0.f},
+	scene->camera = (t_object){.pos		= {0.f, 0.f,  30.f,  0.f},
+							   .axis	= {0.f, 0.f,  -1.f,  0.f},
 							   .param	= {0.f, 0.f,   0.f, 90.f}};
 	set_scene_geometry(scene);
 	set_scene_material(scene);
@@ -359,7 +356,7 @@ int	setup_buffer_objects(t_rtx *rtx)
 
 	glGenVertexArrays(1, &buf[0]);
 	glBindVertexArray(buf[0]);
-	v_scr  = (float []){-1.f, -1.f, -1.f, 1.f, 1.f, -1.f,
+	v_scr = (float []){-1.f, -1.f, -1.f, 1.f, 1.f, -1.f,
 		1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
 	glGenBuffers(1, &buf[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
@@ -389,9 +386,9 @@ int	setup_buffer_objects(t_rtx *rtx)
 static int	setup_shader_program(t_rtx *rtx)
 {
 	rtx->buf_a_program = create_shader_program("res/shaders/buffer_a.vert",
-		 "res/shaders/buffer_a.frag");
+			"res/shaders/buffer_a.frag");
 	rtx->image_program = create_shader_program("res/shaders/image.vert",
-		"res/shaders/image.frag");
+			"res/shaders/image.frag");
 	return (!rtx->buf_a_program || !rtx->image_program);
 }
 
@@ -528,7 +525,7 @@ int	load_texture(t_rtx *rtx)
 	return (0);
 }
 
-int main()
+int	main(int narg, char *args[])
 {
 	t_rtx	rtx = {0};
 	t_vec4	v;

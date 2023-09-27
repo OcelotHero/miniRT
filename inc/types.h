@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 05:46:29 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 08:54:14 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@
 # else
 #  define DENSITY 1.0f
 # endif
+
+# define STB_IMAGE_IMPLEMENTATION
+# define STB_IMAGE_RESIZE_IMPLEMENTATION
 
 enum e_token_types {
 	INVAL	= 0x00000,

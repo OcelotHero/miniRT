@@ -13,7 +13,12 @@
 #include "callbacks.h"
 
 enum e_movement {
-	FWD, BWD, RGT, LFT, INC, DEC
+	FWD,
+	BWD,
+	RGT,
+	LFT,
+	INC,
+	DEC
 };
 
 /**
@@ -35,11 +40,11 @@ static void	move_camera(t_rtx *rtx, enum e_movement mv)
 	else if (mv == BWD)
 		cam->pos = vec4_elem_op(cam->pos, '-', vec4_scale(dist, cam->axis));
 	else if (mv == RGT)
-		cam->pos = vec4_elem_op(cam->pos, '-', vec4_scale(dist,
-			vec4_elem_op(cam->axis, 'x', (t_vec4){0.f, 1.f, 0.f, 0.f})));
-	else if (mv == LFT)
 		cam->pos = vec4_elem_op(cam->pos, '+', vec4_scale(dist,
-			vec4_elem_op(cam->axis, 'x', (t_vec4){0.f, 1.f, 0.f, 0.f})));
+					vec4_elem_op(cam->axis, 'x', (t_vec4){0, 1, 0, 0})));
+	else if (mv == LFT)
+		cam->pos = vec4_elem_op(cam->pos, '-', vec4_scale(dist,
+					vec4_elem_op(cam->axis, 'x', (t_vec4){0, 1, 0, 0})));
 	else if (mv == INC)
 		cam->pos.y += dist;
 	else if (mv == DEC)
