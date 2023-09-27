@@ -88,13 +88,32 @@ Valid attribute formating and their corresponding values for the new geometry:
 		r,g,b		- light color
 			-> each value can only be within the range of [0, 255]
 
-	l: LIGHT
+	lp: PTLIGHT
 		x,y,z		- position vector
 			-> each value can be within the range of (-inf, inf)
 		intensity	- light intensity
 			-> value can only be within the range of [0, 1]
 		r,g,b		- light color
 			-> each value can only be within the range of [0, 255]
+
+	ls: SPLIGHT
+		x,y,z		- position vector
+			-> each value can be within the range of (-inf, inf)
+		x,y,z		- direction vector
+			-> each value can only be within the range of [0, 1]
+		intensity	- light intensity
+			-> value can only be within the range of [0, 1]
+		inner		- spotlight inner cone angle cutoff
+			-> value can only be within the range of [0, 180]
+		outer		- spotlight outer cone angle cutoff
+			-> value can only be within the range of [inner, 180]
+		r,g,b		- light color
+			-> each value can only be within the range of [0, 255]
+NB:	SPLIGHT (spotlight) is a generalized point light sources that accepts 2 additional
+	parameters, the inner and outer cone angle given in degrees. Incident ray falling
+	inside the inner cone gets full intensity, whereas those outside the outer cone gets
+	none, with interpolated value when falling in between the two regions. This means that
+	point light is equivalent to spotlight with the inner and outer cone set to 180 degrees.
 
 !!!Additional keyword!!!
 	CB:	QMAP
@@ -137,6 +156,18 @@ Memory layout packing for attribute values stored in t_object param array
 		intensity	r,g,b
 			-> |r			|g			|b			|intensity	|
 
-	l: light
+	lp: PTLIGHT
+		pos
+			-> |x			|y			|z			|180.0		|
+		axis
+			-> |x			|y			|z			|180.0		|
+		intensity	r,g,b
+			-> |r			|g			|b			|intensity	|
+
+	ls: SPLIGHT
+		pos			inner
+			-> |x			|y			|z			|inner		|
+		axis		outer
+			-> |x			|y			|z			|outer		|
 		intensity	r,g,b
 			-> |r			|g			|b			|intensity	|

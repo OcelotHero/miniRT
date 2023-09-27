@@ -77,9 +77,13 @@ struct SObject {
 	vec4	param;
 };
 
-struct SPointLight {
+struct SSpotLight {
 	vec3	pos;
-	vec4	color;
+	float	iCone;
+	vec3	axis;
+	float	oCone;
+	vec3	color;
+	float	intensity;
 };
 
 struct	SHitRecord {
@@ -105,7 +109,7 @@ layout (std140) uniform Objects {
 layout (std140) uniform Lights {
 	int			nLight;
 	vec4		ambient;
-	SPointLight	lights[MAX_SIZE];
+	SSpotLight	lights[MAX_SIZE];
 };
 
 // The minimunm distance a ray must travel before we consider an intersection.
@@ -231,7 +235,7 @@ vec4	getTexture(float id, vec2 uv) {
 vec3	doBump(vec2 uv, float id, vec3 nor, float scale) {
 	vec3	u = cross(vec3(0.0f, 1.0f, 0.0f), nor);
 	vec3	v = cross(nor, u);
-	float	d = dot(v, u);
+	float	d = dot(u, u);
 
 	float	eps = 0.005f;
 	float	signal = dot(getTexture(id, uv).rgb, vec3(0.33f));
@@ -296,7 +300,7 @@ bool	sphereIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 	rec.t = t;
 	rec.front = front;
 	rec.normal = p * (rec.front ? 1.0f : -1.0f);
-	rec.uv = vec2((atan(p.z, p.x) + PI) / (2 * PI), acos(-p.y) / PI);
+	rec.uv = vec2((-atan(p.z, p.x) + PI) / (2 * PI), acos(-p.y) / PI);
 	return true;
 }
 
@@ -336,9 +340,9 @@ bool	boxIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 	if (tN <= MINIMUM_DIST || rec.t <= tN)	return false;
 
 	// save intersection information in record
-	if (t1.x > t1.y && t1.x > t1.z) { rec.uv = (ro + tN * rd).yz; }
-	else if (t1.y > t1.z)			{ rec.uv = (ro + tN * rd).zx; }
-	else							{ rec.uv = (ro + tN * rd).xy; }
+	if (t1.x > t1.y && t1.x > t1.z) { rec.uv = (ro + tN * rd).yz / (2.0f * object.param.yz) + 0.5f; }
+	else if (t1.y > t1.z)			{ rec.uv = (ro + tN * rd).zx / (2.0f * object.param.zx) + 0.5f; }
+	else							{ rec.uv = (ro + tN * rd).xy / (2.0f * object.param.xy) + 0.5f; }
 
 	// compute normal (in world space)
 	rec.t = tN;
@@ -413,7 +417,8 @@ bool	cylinderIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 		rec.front = cFront;
 		rec.normal = n * -sign(nd);
 	}
-	rec.uv = vec2(2.0f * atan(q.y, q.x), length(q.xy) + q.z);
+	rec.uv = vec2((-atan(q.y, q.x) + PI) / (2.0f * PI),
+				  (object.param.x - length(q.xy) + q.z) / (2.0f * dot(vec2(1.0f), object.param.xy)) + 0.5f);
 	return true;
 }
 
@@ -469,7 +474,7 @@ bool	coneIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 		t = (sign(nd) * object.param.z - nm) / nd;
 		l = m - sign(nd) * object.param.z * n + ray.dir * t;
 	}
-	if (dot(l, l) > (cFront != nd > 0.0f ? r2.x : r2.y))	tc = t;
+	if (dot(l, l) <= (cFront != nd > 0.0f ? r2.x : r2.y))	tc = t;
 
 	// t value larger than record
 	t = min(tm, tc);
@@ -492,7 +497,8 @@ bool	coneIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 		rec.front = cFront;
 		rec.normal = n * -sign(nd);
 	}
-	rec.uv = vec2(2.0f * atan(q.y, q.x), length(q.xy) + q.z);
+	rec.uv = vec2((-atan(q.y, q.x) + PI) / (2 * PI),
+				  (rm - length(q.xy) + q.z) / (2.0f * (rm + object.param.z)) + 0.5f);
 	return true;
 }
 
@@ -613,7 +619,7 @@ bool	diskIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 						normalize(cross(n, vec3(0.0f, 0.0f, 1.0f)));
 	vec3	v = normalize(cross(u, n));
 	vec3	q = p * mat3(u, v, n);
-	rec.uv = vec2(2.0f * atan(q.y, q.x), length(q.xy) + q.z);
+	rec.uv = vec2((-atan(q.y, q.x) + PI) / (2.0f * PI), length(q.xy) / object.param.x);
 	return true;
 }
 
@@ -811,14 +817,14 @@ float geometrySmith(float nv, float nl, float roughness) {
 }
 
 //-----------------------------------------------------
-// Point light functions
+// Spot/point light functions
 //-----------------------------------------------------
 vec3	samplePointLight(SRay ray, SHitRecord rec, SMaterial mat, vec3 throughput,
 						 inout uint rngState, float doSpecular, float doRefraction) {
 	if (nLight == 0)	return vec3(0.0f);
 
-	// uniformly choose between available point lights
-	SPointLight	light = lights[int(floor(randomFloat(rngState) * nLight))];
+	// uniformly choose between available lights
+	SSpotLight	light = lights[int(floor(randomFloat(rngState) * nLight))];
 
 	vec3		p = ray.ori + ray.dir * rec.t +
 					(doRefraction == 1.0f ? -rec.normal : rec.normal) * NORMAL_NUDGE;
@@ -841,8 +847,13 @@ vec3	samplePointLight(SRay ray, SHitRecord rec, SMaterial mat, vec3 throughput,
 	float	nh = max(dot(n, h), 0.0f);
 
 	// calculate light radiance
+	float	iCut = cos(light.iCone * PI / 180.0f);
+	float	oCut = cos(light.oCone * PI / 180.0f);
+	float	th = dot(light.axis, -l);
+	float	ep = iCut - oCut;
+	float	w = clamp((th - oCut + 0.0001f) / ep, 0.0001f, 1.0f);
 	float	attenuation = 1.0f / (d * d);
-	vec3	radiance = light.color.rgb * light.color.w * attenuation;
+	vec3	radiance = light.color * light.intensity * w * attenuation;
 
 	// only shade material in case of diffuse or specular
 	if (doRefraction == 0.0f && shRec.t >= d) {
@@ -914,8 +925,8 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 		// fetch pointlight source
 		SMaterial	lMat;
 		if (litID >= 0) {
-			lMat.emissive = vec4(lights[litID].color.rgb, 0.0f);
-			lMat.intensity = lights[litID].color.a * POINTLIGHT_INTENSITY;
+			lMat.emissive = vec4(lights[litID].color, 0.0f);
+			lMat.intensity = lights[litID].intensity * POINTLIGHT_INTENSITY;
 		}
 
 		rec.normal = getNormal(rec, mat.normalMap);
@@ -927,8 +938,15 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 		color += getMaterialColor(rec, mat.emissive) * mat.intensity * throughput;
 
 		// doSpecular = 0.0f, doRefraction = 0.0f;
-		if (litID >= 0 && (doSpecular == 1.0f || doRefraction == 1.0f))
-			color += getMaterialColor(lRec, lMat.emissive) * lMat.intensity * throughput;
+		if (litID >= 0 && (doSpecular == 1.0f || doRefraction == 1.0f)) {
+			float	iCut = cos(lights[litID].iCone * PI / 180.0f);
+			float	oCut = cos(lights[litID].oCone * PI / 180.0f);
+			float	th = dot(lights[litID].axis, -ray.dir);
+			float	ep = iCut - oCut;
+			float	w = clamp((th - oCut + 0.0001f) / ep, 0.0001f, 1.0f);
+
+			color += getMaterialColor(lRec, lMat.emissive) * w * lMat.intensity * throughput;
+		}
 
 		{
 			// get index-of-refraction at boundary

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 12:19:03 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 17:14:24 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,11 +210,19 @@ void	set_scene_geometry(t_scene *scene)
 		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
 		.param		= {0.5f, 2.f, 0.f, 0.f}};
 
-
-	scene->objects[n++] = (t_object){.type = CY,
+	scene->objects[n++] = (t_object){.type = CN,
 		.pos		= {   0.00f,  -8.00f,   0.00f,   0.00f},
-		.axis		= {   0.00f,   0.00f,  -0.90f,   0.00f},
-		.param		= {2.f, 2.5f, 0.f, 0.f}};
+		.axis		= {   0.00f,   0.50f,   0.50f,   0.00f},
+		.param		= {1.f, 2.f, 2.5f, 0.f}};
+
+	scene->objects[n++] = (t_object){.type = SP,
+		.pos		= {   8.00f,  -8.00f,   2.00f,   0.00f},
+		.param[0]	= 4.f};
+
+	scene->objects[n++] = (t_object){.type = BX,
+		.pos		= {   8.00f,   8.00f,   0.00f,   0.00f},
+		.axis		= {   0.00f,   1.00f,   0.00f,   0.00f},
+		.param		= {2.f, 2.5f, 2.f, 30.f}};
 
 	scene->n_obj = n;
 }
@@ -240,11 +248,11 @@ void	set_scene_material(t_scene *scene)
 										 .IOR = 1.0f};
 	// light
 	scene->materials[n++] = (t_material){.emissive = {   1.0f,   0.9f,   0.5f,   0.0f},
-										 .intensity = 25.0f,
+										 .intensity = 5.0f,
 										 .IOR = 1.0f};
 
 	// picture
-	scene->materials[n++] = (t_material){.albedo = {   0.0f,   0.0f,   0.0f,   3.0f},
+	scene->materials[n++] = (t_material){.albedo = {   0.0f,   0.0f,   0.0f,   2.0f},
 										 .IOR = 1.0f};
 	// strip pattern
 	scene->materials[n++] = (t_material){.albedo = {  64.0f,   0.0f,   0.0f,  -1.0f},
@@ -297,25 +305,39 @@ void	set_scene_material(t_scene *scene)
 										 .spec_chance		= 0.0002f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
-										 .IOR = 1.5f};
+										 .IOR = 1.3f};
 
 	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f,   0.0f},
 										 .spec_color		= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .refr_color		= {   0.0f,   0.0f,   0.0f,   0.0f},
+										 .refr_color		= {   0.8f,   0.0f,   0.0f,   0.0f},
 										 .spec_chance		= 0.02f,
 										 .refr_chance		= 1.00f,
-										 .IOR = 1.5f};
+										 .intensity			= 1.0f,
+										 .IOR = 1.2f};
+
+	scene->materials[n++] = (t_material){.albedo			= {   0.2f,   0.0f,   0.0f,   3.0f},
+										 .spec_color		= {   0.2f,   0.0f,   0.0f,   3.0f},
+										 .normal_map		= {   0.2f,   0.0f,  16.0f,   3.0f},
+										 .spec_chance		= 0.5f,
+										 .IOR = 1.0f};
+
+	scene->materials[n++] = (t_material){.albedo			= {   0.8f,   0.3f,   0.9f,   0.0f},
+										 .spec_color		= {   0.8f,   0.3f,   0.9f,   0.0f},
+										 .spec_chance		= 0.5f,
+										 .IOR = 1.0f};
 }
 
 void	set_scene_light(t_scene *scene)
 {
 	int	n = 0;
 
-	scene->ambient = (t_object){.param  = {0.9f, 0.9f, 0.0f, 0.f}};
-	scene->lights[n++] = (t_object){.pos	= { -12.40f, -10.00f,   0.00f,   0.00f},
+	scene->ambient = (t_object){.param  = {0.9f, 0.9f, 0.0f, 0.1f}};
+	scene->lights[n++] = (t_object){.pos	= { -12.40f, -10.00f,   0.00f, 35.00f},
+									.axis	= { 1.0f, 0.0f, 0.0f, 55.0f},
 									.param	= { 1.0f, 0.9f, 0.5f, 1.0f}};
-	scene->lights[n++] = (t_object){.pos	= { -12.40f,  10.00f,   0.00f,   0.00f},
-									.param	= { 1.0f, 0.9f, 0.5f, 1.0f}};
+	scene->lights[n++] = (t_object){.pos	= { -12.40f,  10.00f,   0.00f, 180.00f},
+									.axis	= { 1.0f,  0.0f, 0.0f, 180.0f},
+									.param	= { 0.1f,  0.1f, 0.9f, 1.0f}};
 
 	scene->n_light = n;
 }
@@ -332,8 +354,7 @@ int	move_scene_to_buffer(t_scene *scene)
 	while (++i < scene->n_light)
 	{
 		obj = &scene->lights[i];
-		glBufferSubData(GL_UNIFORM_BUFFER, 45344 + i * 32, 16, &obj->pos);
-		glBufferSubData(GL_UNIFORM_BUFFER, 45360 + i * 32, 16, &obj->param);
+		glBufferSubData(GL_UNIFORM_BUFFER, 45344 + i * 48, 48, &obj->pos);
 	}
 	return (0);
 }
