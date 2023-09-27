@@ -7,17 +7,19 @@ Valid attribute formating and their corresponding values:
 		r,g,b
 			-> default: 0,0,0
 			-> each value can only be within the range of [0, 255]
+
+	texture
 		path_to_texture(:u_offset,v_offset)
 			-> default: 0,0
-			-> each value can only be within the range of [-1, 1] | (-inf, inf) (ONLY CHOOSE ONE)
+			-> each value can only be within the range of [-1, 1]
 		checkered(:u_scale,v_scale)
 			-> default: 0,0
-			-> each value can only be within the range of [0, inf) | (-inf, inf) (ONLY CHOOSE ONE)
+			-> each value can only be within the range of [0, inf)
 
 	normalMap
 		path_to_texture:(u_offset,v_offset,) scale
 			-> default: 0,0
-			-> each value can only be within the range of [-1, 1] | (-inf, inf) (ONLY CHOOSE ONE)
+			-> each value can only be within the range of [-1, 1]
 			-> scale is always required with a range of [0, inf)
 
 	specularChance, specularRoughness, refractionChance, refractionRoughness
@@ -39,14 +41,12 @@ Valid attribute formating and their corresponding values:
 Memory layout packing for the attribute values:
 	albedo, emissive, specularColor, refractionColor (vec4)
 		r,g,b
-			-> |r			|g			|b			|0			|
+			-> |r			|g			|b			|
 		path_to_texture(:u_offset,v_offset)
-			-> |u_offset	|v_offset	|.			|tex_index	|
+			-> |u_offset	|v_offset	|tex_index	|
 		checkered(:u_scale,v_scale)
-			-> |u_scale		|v_scale	|.			|-1			|
+			-> |u_scale		|v_scale	|-1			|
 
 	normalMap
 		path_to_texture:(u_offset,v_offset,) scale
 			-> |u_offset	|v_offset	|scale		|tex_index	|
-
-	. - indicates padding

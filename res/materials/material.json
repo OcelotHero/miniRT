@@ -16,5 +16,20 @@
 	"obj2"	:
 	{
 		"albedo"	: "r,g,b"
+	},
+	"obj3"	:
+	{
+		"albedo"				: "r,g,b [0, 255]",
+		"emmisive"				: "r,g,b [0, 255]",
+		"specularColor"			: "r,g,b [0, 255]",
+		"refractionColor"		: "r,g,b [0, 255]",
+		"texture"				: "path_to_texture ( : u_offset,v_offset -> [-1, 1],[-1, 1] ) | checkered( :u_scale,v_scale -> [0, inf),[0, inf) )",
+		"normalMap"				: "path_to_texture:{ u_offset,v_offset,scale -> [-1, 1],[-1, 1],[0, inf) | scale -> [0, inf)}",
+		"intensity"				: "[0, inf)",
+		"specularChance"		: "[0, 1]",
+		"specularRoughness"		: "[0, 1]",
+		"IOR"					: "[1, inf)",
+		"refractionChance"		: "[0, 1]",
+		"refractionRoughness"	: "[0, 1]"
 	}
 }

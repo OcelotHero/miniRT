@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 13:28:01 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 18:28:29 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,14 +112,14 @@ typedef	struct	s_scene
 
 typedef struct	s_material
 {
-	t_vec4	albedo;
-	t_vec4	emissive;
-	t_vec4	spec_color;
-	t_vec4	refr_color;
-	t_vec4	normal_map;
+	t_vec3	albedo;
 	float	intensity;
+	t_vec3	emissive;
+	t_vec3	spec_color;
 	float	spec_chance;
+	t_vec3	refr_color;
 	float	spec_roughness;
+	t_vec3	normal_map;
 	float	IOR;
 	float	refr_chance;
 	float	refr_roughness;
