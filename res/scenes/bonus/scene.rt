@@ -1,5 +1,7 @@
 A 									0.2 												255,255,255
 C 		-50,0,20 		0,0,0 							70
+r										width	height
+CB									intensity											path_to_cubemap
 l 		-40,0,30 					0.7													255,255,255
 sp 		0,0,20 							20 												r,g,b | path_to_json(:obj_name)
 cy 		50.0,0.0,20.6	0,0,1.0			14.2	21.42 									r,g,b | path_to_json(:obj_name)

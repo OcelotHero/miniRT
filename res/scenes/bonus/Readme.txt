@@ -96,6 +96,17 @@ Valid attribute formating and their corresponding values for the new geometry:
 		r,g,b		- light color
 			-> each value can only be within the range of [0, 255]
 
+!!!Additional keyword!!!
+	CB:	QMAP
+		intensity	- background intensity
+			-> value can only be within the range of [0, 1]
+
+	R:	SIZE
+		width		- window width
+			-> value can only be within the range of [0, inf)
+		height		- window height
+			-> value can only be within the range of [0, inf)
+
 //------------------------------------------------------------------------------
 Memory layout packing for attribute values stored in t_object param array
 (the 4 values after the first 2 vectors):
@@ -129,4 +140,3 @@ Memory layout packing for attribute values stored in t_object param array
 	l: light
 		intensity	r,g,b
 			-> |r			|g			|b			|intensity	|
-
