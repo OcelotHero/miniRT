@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 17:14:24 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 21:24:04 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,89 +140,89 @@ void	set_scene_geometry(t_scene *scene)
 
 	// back wall
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,   0.00f,  -5.00f,   0.00f},
-			   {  12.60f,   0.00f,  -5.00f,   0.00f},
-			   {   0.00f,  12.60f,  -5.00f,   0.00f}};
+		.pos	= {   0.00f,   0.00f,  -5.00f},
+		.axis	= {  12.60f,   0.00f,  -5.00f},
+		.param	= {   0.00f,  12.60f,  -5.00f,   0.00f}};
 	// floor
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f, -12.45f,   0.00f,   0.00f},
-			   {  12.60f, -12.45f,   0.00f,   0.00f},
-			   {   0.00f, -12.45f,  -5.00f,   0.00f}};
+		.pos 	= {   0.00f, -12.45f,   0.00f},
+		.axis	= {  12.60f, -12.45f,   0.00f},
+		.param	= {   0.00f, -12.45f,  -5.00f,   0.00f}};
 	// ceiling
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,  12.50f,   0.00f,   0.00f},
-			   {   0.00f,  12.50f,  -5.00f,   0.00f},
-			   {  12.60f,  12.50f,   0.00f,   0.00f}};
+		.pos 	= {   0.00f,  12.50f,   0.00f},
+		.axis	= {   0.00f,  12.50f,  -5.00f},
+		.param	= {  12.60f,  12.50f,   0.00f,   0.00f}};
 	// left wall
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = { -12.50f,   0.00f,   0.00f,   0.00f},
-			   { -12.50f,  12.60f,   0.00f,   0.00f},
-			   { -12.50f,   0.00f,  -5.00f,   0.00f}};
+		.pos	= { -12.50f,   0.00f,   0.00f},
+		.axis	= { -12.50f,  12.60f,   0.00f},
+		.param	= { -12.50f,   0.00f,  -5.00f,   0.00f}};
 	// right wall
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {  12.50f,   0.00f,   0.00f,   0.00f},
-			   {  12.50f,  12.60f,   0.00f,   0.00f},
-			   {  12.50f,   0.00f,  -5.00f,   0.00f}};
+		.pos	= {  12.50f,   0.00f,   0.00f},
+		.axis	= {  12.50f,  12.60f,   0.00f},
+		.param	= {  12.50f,   0.00f,  -5.00f,   0.00f}};
 	// light
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,  12.40f,   0.00f,   0.00f},
-			   {   5.00f,  12.40f,   0.00f,   0.00f},
-			   {   0.00f,  12.40f,  -2.50f,   0.00f}};
+		.pos	= {   0.00f,  12.40f,   0.00f},
+		.axis	= {   5.00f,  12.40f,   0.00f},
+		.param	= {   0.00f,  12.40f,  -2.50f,   0.00f}};
 
 	// picture
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,   0.00f,  -4.90f,   0.00f},
-			   {   0.00f,   3.50f,  -4.90f,   0.00f},
-			   {   5.50f,   0.00f,  -4.90f,   0.00f}};
+		.pos	= {   0.00f,   0.00f,  -4.90f},
+		.axis	= {   0.00f,   3.50f,  -4.90f},
+		.param	= {   5.50f,   0.00f,  -4.90f,   0.00f}};
 	// strip pattern
 	scene->objects[n++] = (t_object){.type = QD,
-		.pos = {   0.00f,  -8.50f,  -4.90f,   0.00f},
-			   {   0.00f,  -5.00f,  -4.90f,   0.00f},
-			   {   5.50f,  -8.50f,  -4.90f,   0.00f}};
+		.pos	= {   0.00f,  -8.50f,  -4.90f},
+		.axis	= {   0.00f,  -5.00f,  -4.90f},
+		.param	= {   5.50f,  -8.50f,  -4.90f,   0.00f}};
 
 	// spheres of varying specular roughness
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= { -10.00f,   0.00f,  -3.00f,   0.00f},
+		.pos		= { -10.00f,   0.00f,  -3.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {  -5.00f,   0.00f,  -3.00f,   0.00f},
+		.pos		= {  -5.00f,   0.00f,  -3.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   0.00f,   0.00f,  -3.00f,   0.00f},
+		.pos		= {   0.00f,   0.00f,  -3.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   5.00f,   0.00f,  -3.00f,   0.00f},
+		.pos		= {   5.00f,   0.00f,  -3.00f},
 		.param[0]	= 1.75f};
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {  10.00f,   0.00f,  -3.00f,   0.00f},
+		.pos		= {  10.00f,   0.00f,  -3.00f},
 		.param[0]	= 1.75f};
 
 	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f,  -9.90f,   0.00f,   0.00f},
-		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
-		.param		= {2.f, 2.5f, 0.f, 0.f}};
+		.pos		= {  -7.00f,  -9.90f,   0.00f},
+		.axis		= {   0.00f,   0.90f,   0.00f},
+		.param		= {   2.00f,   2.50f,   0.00f,   0.00f}};
 	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f, -10.00f,  -1.00f,   0.00f},
-		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
-		.param		= {0.5f, 2.f, 0.f, 0.f}};
+		.pos		= {  -7.00f, -10.00f,  -1.00f},
+		.axis		= {   0.00f,   0.90f,   0.00f},
+		.param		= {   0.50f,   2.00f,   0.00f,   0.00f}};
 	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f, -10.00f,   1.00f,   0.00f},
-		.axis		= {   0.00f,   0.90f,   0.00f,   0.00f},
-		.param		= {0.5f, 2.f, 0.f, 0.f}};
+		.pos		= {  -7.00f, -10.00f,   1.00f},
+		.axis		= {   0.00f,   0.90f,   0.00f},
+		.param		= {   0.50f,   2.00f,   0.00f,   0.00f}};
 
 	scene->objects[n++] = (t_object){.type = CN,
-		.pos		= {   0.00f,  -8.00f,   0.00f,   0.00f},
-		.axis		= {   0.00f,   0.50f,   0.50f,   0.00f},
-		.param		= {1.f, 2.f, 2.5f, 0.f}};
+		.pos		= {   0.00f,  -8.00f,   0.00f},
+		.axis		= {   0.00f,   0.50f,   0.50f},
+		.param		= {   1.00f,   2.00f,   2.50f,   0.00f}};
 
 	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   8.00f,  -8.00f,   2.00f,   0.00f},
+		.pos		= {   8.00f,  -8.00f,   2.00f},
 		.param[0]	= 4.f};
 
 	scene->objects[n++] = (t_object){.type = BX,
-		.pos		= {   8.00f,   8.00f,   0.00f,   0.00f},
-		.axis		= {   0.00f,   1.00f,   0.00f,   0.00f},
-		.param		= {2.f, 2.5f, 2.f, 30.f}};
+		.pos		= {   8.00f,   8.00f,   0.00f},
+		.axis		= {   0.00f,   1.00f,   0.00f},
+		.param		= {   2.00f,   2.50f,   2.00f,  30.00f}};
 
 	scene->n_obj = n;
 }
@@ -232,97 +232,100 @@ void	set_scene_material(t_scene *scene)
 	int	n = 0;
 
 	// back wall
-	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.7f,   0.7f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.7f,   0.7f},
 										 .IOR = 1.0f};
 	// floor
-	scene->materials[n++] = (t_material){.albedo = {  64.0f, 128.0f,   0.0f,  -1.0f},
+	scene->materials[n++] = (t_material){.albedo	= {   1.0f,   1.0f,   1.0f},
+										 .texture	= {  64.0f, 128.0f,  -1.0f},
 										 .IOR = 1.0f};
 	// ceiling
-	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.7f,   0.7f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.7f,   0.7f},
 										 .IOR = 1.0f};
 	// left wall
-	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.1f,   0.1f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.1f,   0.1f},
 										 .IOR = 1.0f};
 	// right wall
-	scene->materials[n++] = (t_material){.albedo = {   0.1f,   0.7f,   0.1f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo = {   0.1f,   0.7f,   0.1f},
 										 .IOR = 1.0f};
 	// light
-	scene->materials[n++] = (t_material){.emissive = {   1.0f,   0.9f,   0.5f,   0.0f},
+	scene->materials[n++] = (t_material){.emissive = {   1.0f,   0.9f,   0.5f},
 										 .intensity = 5.0f,
 										 .IOR = 1.0f};
 
 	// picture
-	scene->materials[n++] = (t_material){.albedo = {   0.0f,   0.0f,   0.0f,   2.0f},
+	scene->materials[n++] = (t_material){.albedo	= {   1.0f,   1.0f,   1.0f},
+										 .texture	= {   0.0f,   0.0f,   2.0f},
 										 .IOR = 1.0f};
 	// strip pattern
-	scene->materials[n++] = (t_material){.albedo = {  64.0f,   0.0f,   0.0f,  -1.0f},
+	scene->materials[n++] = (t_material){.albedo	= {   1.0f,   1.0f,   1.0f},
+										 .texture	= {  64.0f,   0.0f,  -1.0f},
 										 .IOR = 1.0f};
 
 	// spheres of varying specular roughness
-	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f,   0.0f},
-										 .spec_color		= {   0.3f,   1.0f,   0.3f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
+										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.0f,
 										 .IOR = 1.0f};
-	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f,   0.0f},
-										 .spec_color		= {   0.3f,   1.0f,   0.3f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
+										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.25f,
 										 .IOR = 1.0f};
-	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f,   0.0f},
-										 .spec_color		= {   0.3f,   1.0f,   0.3f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
+										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.5f,
 										 .IOR = 1.0f};
-	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f,   0.0f},
-										 .spec_color		= {   0.3f,   1.0f,   0.3f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
+										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.75f,
 										 .IOR = 1.0f};
-	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f,   0.0f},
-										 .spec_color		= {   0.3f,   1.0f,   0.3f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
+										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 1.0f,
 										 .IOR = 1.0f};
 
 
-	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .spec_color		= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .refr_color		= {   0.0f,   0.0f,   0.0f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
+										 .spec_color		= {   0.9f,   0.9f,   0.9f},
+										 .refr_color		= {   0.0f,   0.0f,   0.0f},
 										 .spec_chance		= 0.02f,
 										 .refr_chance		= 0.96f,
 										 .IOR = 1.5f};
-	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .spec_color		= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .refr_color		= {   0.1f,   0.4f,   1.0f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
+										 .spec_color		= {   0.9f,   0.9f,   0.9f},
+										 .refr_color		= {   0.1f,   0.4f,   1.0f},
 										 .spec_chance		= 0.0002f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
 										 .IOR = 1.5f};
-	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .spec_color		= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .refr_color		= {   1.0f,   0.4f,   0.0f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
+										 .spec_color		= {   0.9f,   0.9f,   0.9f},
+										 .refr_color		= {   1.0f,   0.4f,   0.0f},
 										 .spec_chance		= 0.0002f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
 										 .IOR = 1.3f};
 
-	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .spec_color		= {   0.9f,   0.9f,   0.9f,   0.0f},
-										 .refr_color		= {   0.8f,   0.0f,   0.0f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
+										 .spec_color		= {   0.9f,   0.9f,   0.9f},
+										 .refr_color		= {   0.8f,   0.0f,   0.0f},
 										 .spec_chance		= 0.02f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
 										 .IOR = 1.2f};
 
-	scene->materials[n++] = (t_material){.albedo			= {   0.2f,   0.0f,   0.0f,   3.0f},
-										 .spec_color		= {   0.2f,   0.0f,   0.0f,   3.0f},
+	scene->materials[n++] = (t_material){.texture			= {   0.2f,   0.0f,   3.0f},
 										 .normal_map		= {   0.2f,   0.0f,  16.0f,   3.0f},
+										 .spec_color		= {   1.0f,   1.0f,   1.0f},
 										 .spec_chance		= 0.5f,
 										 .IOR = 1.0f};
 
-	scene->materials[n++] = (t_material){.albedo			= {   0.8f,   0.3f,   0.9f,   0.0f},
-										 .spec_color		= {   0.8f,   0.3f,   0.9f,   0.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   0.8f,   0.3f,   0.9f},
+										 .spec_color		= {   0.8f,   0.3f,   0.9f},
 										 .spec_chance		= 0.5f,
 										 .IOR = 1.0f};
 }
@@ -332,12 +335,16 @@ void	set_scene_light(t_scene *scene)
 	int	n = 0;
 
 	scene->ambient = (t_object){.param  = {0.9f, 0.9f, 0.0f, 0.1f}};
-	scene->lights[n++] = (t_object){.pos	= { -12.40f, -10.00f,   0.00f, 35.00f},
-									.axis	= { 1.0f, 0.0f, 0.0f, 55.0f},
-									.param	= { 1.0f, 0.9f, 0.5f, 1.0f}};
-	scene->lights[n++] = (t_object){.pos	= { -12.40f,  10.00f,   0.00f, 180.00f},
-									.axis	= { 1.0f,  0.0f, 0.0f, 180.0f},
-									.param	= { 0.1f,  0.1f, 0.9f, 1.0f}};
+	scene->lights[n++] = (t_object){.pos	= { -12.40f, -10.00f,   0.00f},
+									.axis	= {   1.00f,   0.00f,   0.00f},
+									.i_cone	= 35.f,
+									.o_cone	= 55.f,
+									.param	= {   1.00f,   0.90f,   0.50f,   1.00f}};
+	scene->lights[n++] = (t_object){.pos	= { -12.40f,  10.00f,   0.00f},
+									.axis	= {   1.00f,   0.00f,   0.00f},
+									.i_cone	= 180.f,
+									.o_cone	= 180.f,
+									.param	= {   0.10f,   0.10f,   0.90f,   1.0f}};
 
 	scene->n_light = n;
 }
@@ -361,8 +368,8 @@ int	move_scene_to_buffer(t_scene *scene)
 
 int	setup_and_load_scene(t_scene *scene)
 {
-	scene->camera = (t_object){.pos		= {0.f, 0.f,  30.f,  0.f},
-							   .axis	= {0.f, 0.f,  -1.f,  0.f},
+	scene->camera = (t_object){.pos		= {0.f, 0.f,  30.f},
+							   .axis	= {0.f, 0.f,  -1.f},
 							   .param	= {0.f, 0.f,   0.f, 90.f}};
 	set_scene_geometry(scene);
 	set_scene_material(scene);
@@ -389,9 +396,9 @@ int	setup_buffer_objects(t_rtx *rtx)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glGenBuffers(1, &buf[2]);
 	glBindBuffer(GL_UNIFORM_BUFFER, buf[2]);
-	glBufferData(GL_UNIFORM_BUFFER, 53536, NULL, GL_STATIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, buf[2], 0, 45248);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 1, buf[2], 45312, 8192);
+	glBufferData(GL_UNIFORM_BUFFER, 57632, NULL, GL_STATIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, buf[2], 0, 45136);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 1, buf[2], 45312, 12320);
 	glUniformBlockBinding(rtx->buf_a_program,
 		glGetUniformBlockIndex(rtx->buf_a_program, "Objects"), 0);
 	glUniformBlockBinding(rtx->buf_a_program,
@@ -550,7 +557,7 @@ int	load_texture(t_rtx *rtx)
 int	main(int narg, char *args[])
 {
 	t_rtx	rtx = {.size = {WIDTH, HEIGHT}};
-	t_vec4	v;
+	t_vec3	v;
 
 	rtx.mlx = mlx_init(rtx.size[0], rtx.size[1], "miniRT", true);
 	if (setup_shader_program(&rtx))

@@ -36,6 +36,7 @@ Valid attribute formating and their corresponding values:
 
 	undeclared key-value pair are set to default
 	invalid key can be ignored and program can proceed normally without printing error
+	when texture key is found and valid, albedo and spec_color is initialized to ones
 
 //------------------------------------------------------------------------------
 Memory layout packing for the attribute values:

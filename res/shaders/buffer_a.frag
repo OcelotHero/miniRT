@@ -57,17 +57,18 @@ uniform sampler2D	tex15;
 #define	TRIAGL	0x40000
 
 struct	SMaterial {
-	vec4	albedo;			// the color used for diffuse lighting
-	vec4	emissive;		// how much the surface glows
-	vec4 	specColor;		// the color tint of specular reflections
-	vec4	refrColor;		// absorption for beer's law
-	vec4	normalMap;		// normal-altering texture map
+	vec3	albedo;			// the color used for diffuse lighting
 	float	intensity;		// emissive multiplier
-	float	specChance;		// percentage chance of doing a specular reflection
+	vec3	emissive;		// how much the surface glows
 	float	specRoughness;	// how rough the specular reflections are
-	float	IOR;			// index of refraction used by fresnel and refraction
+	vec3 	specColor;		// the color tint of specular reflections
+	float	specChance;		// percentage chance of doing a specular reflection
+	vec3	refrColor;		// absorption for beer's law
 	float	refrChance;		// percent chance of doing a refractive transmission
+	vec3	texture;		// texture map
 	float	refrRoughness;	// how rough the refractive transmissions are
+	vec4	normalMap;		// normal-altering texture map
+	float	IOR;			// index of refraction used by fresnel and refraction
 };
 
 struct SObject {
@@ -215,6 +216,7 @@ mat4	translate(vec3 t) {
 // Texturing functions
 //-----------------------------------------------------
 vec4	getTexture(float id, vec2 uv) {
+	if (id <  1.5f) return texture(framebuffer, uv);
 	if (id <  2.5f)	return texture(tex02, uv);
 	if (id <  3.5f)	return texture(tex03, uv);
 	if (id <  4.5f)	return texture(tex04, uv);
@@ -254,10 +256,10 @@ vec3	checkerboard(vec2 uv) {
 	return col;
 }
 
-vec3	getMaterialColor(SHitRecord rec, vec4 param) {
-	if (param.w < -0.5f)	return checkerboard(param.xy * rec.uv);
-	if (param.w <  0.5f)	return param.rgb;
-	return getTexture(param.w, param.xy + rec.uv).rgb;
+vec3	getTexture(SHitRecord rec, vec3 param) {
+	if (param.z < -0.5f)	return checkerboard(param.xy * rec.uv);
+	if (param.z < 0.5f)		return vec3(1.0f);
+	return getTexture(param.z, param.xy + rec.uv).rgb;
 }
 
 vec3	getNormal(SHitRecord rec, vec4 param) {
@@ -437,9 +439,6 @@ bool	coneIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 	float	a = 1.0f - y * nd * nd;
 	float	b = dot(m, ray.dir) - y * nm * nd + rm * k * nd;
 	float	c = dot(m, m) - nm * nm - r * r;
-
-	// exit if r originates outside cy (c > 0) and r points away from cy (b > 0)
-	if (c > 0.0f && b > 0.0f)	return false;
 
 	// r does not intersect sp
 	float	dis = b * b - a * c;
@@ -777,8 +776,7 @@ vec3	evaluateInteraction(inout SRay ray, SHitRecord rec, SMaterial mat, float cI
 
 	if (doRefraction == 1.0f)
 		return vec3(1.0f);
-	return mix(getMaterialColor(rec, mat.albedo),
-			   getMaterialColor(rec, mat.specColor), doSpecular);
+	return mix(mat.albedo, mat.specColor, doSpecular);
 }
 
 //-----------------------------------------------------
@@ -901,10 +899,11 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 	vec3	color		= vec3(0.0f);
 	vec3	throughput	= vec3(1.0f);
 
+	int	i;
 	SHitRecord	rec;
 	float	cIOR = 1.0f;
 	float	doSpecular = 0.0f, doRefraction = 0.0f;
-	for (int i = 0; i < NUM_BOUNCES; ++i) {
+	for (i = 0; i < NUM_BOUNCES; ++i) {
 		// shoot a ray out into the world
 		int	objID = sceneIntersection(ray, rec);
 
@@ -922,22 +921,17 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 		if (objID >= 0)
 			mat = materials[objID];
 
-		// fetch pointlight source
-		SMaterial	lMat;
-		if (litID >= 0) {
-			lMat.emissive = vec4(lights[litID].color, 0.0f);
-			lMat.intensity = lights[litID].intensity * POINTLIGHT_INTENSITY;
-		}
 
 		rec.normal = getNormal(rec, mat.normalMap);
 		// do absorption if we are hitting from inside the object
 		if (!rec.front || (rec.front && cIOR != 1.0f))
-			throughput *= max(exp(-getMaterialColor(rec, mat.refrColor) * mat.intensity * rec.t), vec3(0.0f));
+			throughput *= getTexture(rec, mat.texture)
+				* max(exp(-mat.refrColor * mat.intensity * rec.t), vec3(0.0f));
 
 		// add in emissive lighting
-		color += getMaterialColor(rec, mat.emissive) * mat.intensity * throughput;
+		color += getTexture(rec, mat.texture) * mat.emissive * mat.intensity * throughput;
 
-		// doSpecular = 0.0f, doRefraction = 0.0f;
+		// fetch spot/point light source
 		if (litID >= 0 && (doSpecular == 1.0f || doRefraction == 1.0f)) {
 			float	iCut = cos(lights[litID].iCone * PI / 180.0f);
 			float	oCut = cos(lights[litID].oCone * PI / 180.0f);
@@ -945,7 +939,7 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 			float	ep = iCut - oCut;
 			float	w = clamp((th - oCut + 0.0001f) / ep, 0.0001f, 1.0f);
 
-			color += getMaterialColor(lRec, lMat.emissive) * w * lMat.intensity * throughput;
+			color += lights[litID].color * lights[litID].intensity * throughput * w * POINTLIGHT_INTENSITY;
 		}
 
 		{
@@ -966,7 +960,8 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 			// Evaluate the ray interaction, accumulating the weight by updating the throughput
 			// and calculating the ray origin and direction for the new ray.
 			SRay	nRay = ray;
-			throughput *= evaluateInteraction(nRay, rec, mat, cIOR, rngState, doSpecular, doRefraction);
+			throughput *= getTexture(rec, mat.texture)
+				* evaluateInteraction(nRay, rec, mat, cIOR, rngState, doSpecular, doRefraction);
 
 			// Since we chose randomly between diffuse, specular, refract,
 			// divide by the probability of choosing that specific interaction
@@ -998,7 +993,7 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 		}
 	}
 	// ambient
-	if (rec.t != MAXIMUM_DIST)
+	if (i != 0)
 		color += ambient.rgb * ambient.w * throughput;
 
 	// return pixel color

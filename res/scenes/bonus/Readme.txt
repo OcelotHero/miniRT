@@ -109,6 +109,7 @@ Valid attribute formating and their corresponding values for the new geometry:
 			-> value can only be within the range of [inner, 180]
 		r,g,b		- light color
 			-> each value can only be within the range of [0, 255]
+
 NB:	SPLIGHT (spotlight) is a generalized point light sources that accepts 2 additional
 	parameters, the inner and outer cone angle given in degrees. Incident ray falling
 	inside the inner cone gets full intensity, whereas those outside the outer cone gets
@@ -157,17 +158,9 @@ Memory layout packing for attribute values stored in t_object param array
 			-> |r			|g			|b			|intensity	|
 
 	lp: PTLIGHT
-		pos
-			-> |x			|y			|z			|180.0		|
-		axis
-			-> |x			|y			|z			|180.0		|
 		intensity	r,g,b
 			-> |r			|g			|b			|intensity	|
 
 	ls: SPLIGHT
-		pos			inner
-			-> |x			|y			|z			|inner		|
-		axis		outer
-			-> |x			|y			|z			|outer		|
 		intensity	r,g,b
 			-> |r			|g			|b			|intensity	|

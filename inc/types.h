@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 18:28:29 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 20:53:34 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,23 +115,26 @@ typedef struct	s_material
 	t_vec3	albedo;
 	float	intensity;
 	t_vec3	emissive;
+	float	spec_roughness;
 	t_vec3	spec_color;
 	float	spec_chance;
 	t_vec3	refr_color;
-	float	spec_roughness;
-	t_vec3	normal_map;
-	float	IOR;
 	float	refr_chance;
+	t_vec3	texture;
 	float	refr_roughness;
-	float	pad[2];
+	t_vec4	normal_map;
+	float	IOR;
+	float	pad[3];
 }	t_material;
 
 typedef struct	s_object
 {
 	int			type;
 	int			pad[3];
-	t_vec4		pos;
-	t_vec4		axis;
+	t_vec3		pos;
+	float		i_cone;
+	t_vec3		axis;
+	float		o_cone;
 	float		param[4];
 }	t_object;
 

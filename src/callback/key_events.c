@@ -36,15 +36,15 @@ static void	move_camera(t_rtx *rtx, enum e_movement mv)
 	cam = &rtx->scene.camera;
 	dist = MV_SPEED * rtx->delta_time;
 	if (mv == FWD)
-		cam->pos = vec4_elem_op(cam->pos, '+', vec4_scale(dist, cam->axis));
+		cam->pos = vec3_elem_op(cam->pos, '+', vec3_scale(dist, cam->axis));
 	else if (mv == BWD)
-		cam->pos = vec4_elem_op(cam->pos, '-', vec4_scale(dist, cam->axis));
+		cam->pos = vec3_elem_op(cam->pos, '-', vec3_scale(dist, cam->axis));
 	else if (mv == RGT)
-		cam->pos = vec4_elem_op(cam->pos, '+', vec4_scale(dist,
-					vec4_elem_op(cam->axis, 'x', (t_vec4){0, 1, 0, 0})));
+		cam->pos = vec3_elem_op(cam->pos, '+', vec3_scale(dist,
+					vec3_elem_op(cam->axis, 'x', (t_vec3){0, 1, 0})));
 	else if (mv == LFT)
-		cam->pos = vec4_elem_op(cam->pos, '-', vec4_scale(dist,
-					vec4_elem_op(cam->axis, 'x', (t_vec4){0, 1, 0, 0})));
+		cam->pos = vec3_elem_op(cam->pos, '-', vec3_scale(dist,
+					vec3_elem_op(cam->axis, 'x', (t_vec3){0, 1, 0})));
 	else if (mv == INC)
 		cam->pos.y += dist;
 	else if (mv == DEC)
