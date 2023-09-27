@@ -13,12 +13,12 @@
 #include "callbacks.h"
 
 enum e_movement {
-	FWD,
-	BWD,
-	RGT,
-	LFT,
-	INC,
-	DEC
+	FWD = 1 << 0,
+	BWD = 1 << 1,
+	RGT = 1 << 2,
+	LFT = 1 << 3,
+	INC = 1 << 4,
+	DEC = 1 << 5
 };
 
 /**
@@ -28,26 +28,26 @@ enum e_movement {
  * @param	keydata	The callback data, containing info on key
  * @param	fdf		Pointer to fdf struct
  */
-static void	move_camera(t_rtx *rtx, enum e_movement mv)
+static void	move_camera(t_rtx *rtx, int movement)
 {
 	float		dist;
 	t_object	*cam;
 
 	cam = &rtx->scene.camera;
 	dist = MV_SPEED * rtx->delta_time;
-	if (mv == FWD)
+	if (movement & FWD)
 		cam->pos = vec3_elem_op(cam->pos, '+', vec3_scale(dist, cam->axis));
-	else if (mv == BWD)
+	if (movement & BWD)
 		cam->pos = vec3_elem_op(cam->pos, '-', vec3_scale(dist, cam->axis));
-	else if (mv == RGT)
+	if (movement & RGT)
 		cam->pos = vec3_elem_op(cam->pos, '+', vec3_scale(dist,
 					vec3_elem_op(cam->axis, 'x', (t_vec3){0, 1, 0})));
-	else if (mv == LFT)
+	if (movement & LFT)
 		cam->pos = vec3_elem_op(cam->pos, '-', vec3_scale(dist,
 					vec3_elem_op(cam->axis, 'x', (t_vec3){0, 1, 0})));
-	else if (mv == INC)
+	if (movement & INC)
 		cam->pos.y += dist;
-	else if (mv == DEC)
+	if (movement & DEC)
 		cam->pos.y -= dist;
 	rtx->refresh = true;
 }
@@ -63,27 +63,29 @@ static void	move_camera(t_rtx *rtx, enum e_movement mv)
  */
 void	key_hook(mlx_key_data_t keydata, void *param)
 {
-	t_rtx	*rtx;
+	static int	movement = 0;
+	t_rtx		*rtx;
 
 	rtx = (t_rtx *)param;
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
 		exit(cleanup(rtx, 0));
 	if ((keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_W)
-		&& (keydata.action == MLX_PRESS || keydata.action == MLX_REPEAT))
-		move_camera(rtx, FWD);
+		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
+		movement ^= FWD;
 	else if ((keydata.key == MLX_KEY_DOWN || keydata.key == MLX_KEY_S)
-		&& (keydata.action == MLX_PRESS || keydata.action == MLX_REPEAT))
-		move_camera(rtx, BWD);
+		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
+		movement ^= BWD;
 	else if ((keydata.key == MLX_KEY_RIGHT || keydata.key == MLX_KEY_D)
-		&& (keydata.action == MLX_PRESS || keydata.action == MLX_REPEAT))
-		move_camera(rtx, RGT);
+		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
+		movement ^= RGT;
 	else if ((keydata.key == MLX_KEY_LEFT || keydata.key == MLX_KEY_A)
-		&& (keydata.action == MLX_PRESS || keydata.action == MLX_REPEAT))
-		move_camera(rtx, LFT);
+		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
+		movement ^= LFT;
 	else if (keydata.key == MLX_KEY_E
-		&& (keydata.action == MLX_PRESS || keydata.action == MLX_REPEAT))
-		move_camera(rtx, INC);
+		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
+		movement ^= INC;
 	else if (keydata.key == MLX_KEY_Q
-		&& (keydata.action == MLX_PRESS || keydata.action == MLX_REPEAT))
-		move_camera(rtx, DEC);
+		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
+		movement ^= DEC;
+	move_camera(rtx, movement);
 }

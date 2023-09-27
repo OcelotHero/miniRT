@@ -3,7 +3,12 @@ refering to one material object as in `green_metal.json`, both are valid.
 
 //------------------------------------------------------------------------------
 Valid attribute formating and their corresponding values:
-	albedo, emissive, specularColor, refractionColor
+	albedo, specularColor
+		r,g,b
+			-> default: 255,255,255
+			-> each value can only be within the range of [0, 255]
+
+	emissive, refractionColor
 		r,g,b
 			-> default: 0,0,0
 			-> each value can only be within the range of [0, 255]
