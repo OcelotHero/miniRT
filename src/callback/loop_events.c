@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "callbacks.h"
-#include "MLX42/MLX42_Int.h"
 
 /**
  * Helper function to set OpenGL int uniform value.
@@ -58,15 +57,15 @@ void	loop_hook(void *param)
 		rtx->refresh = false;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, rtx->framebuffer);
-	glViewport(0, 0, (int)(WIDTH / DENSITY), (int)(HEIGHT / DENSITY));
+	glViewport(0, 0, rtx->size[0], rtx->size[1]);
 	glUseProgram(rtx->buf_a_program);
-	set_float2(rtx->buf_a_program, "iResolution", WIDTH, HEIGHT);
+	set_float2(rtx->buf_a_program, "iResolution", rtx->size[0], rtx->size[1]);
 	set_int(rtx->buf_a_program, "iFrame",
 		(int)((glfwGetTime() - rtx->start_time) * 60));
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, rtx->size[0] * DENSITY, rtx->size[1] * DENSITY);
 	glUseProgram(rtx->image_program);
-	set_float2(rtx->image_program, "iResolution", WIDTH, HEIGHT);
+	set_float2(rtx->image_program, "iResolution", rtx->size[0] * DENSITY, rtx->size[1] * DENSITY);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

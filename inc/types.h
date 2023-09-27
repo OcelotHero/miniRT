@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 08:54:14 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 13:16:31 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,6 @@
 # define A_FLT2	1 << 4
 # define A_FOV	1 << 5
 # define A_COL	1 << 6
-
-# define WIDTH	1600
-# define HEIGHT	900
 
 # ifdef __APPLE__
 #  define DENSITY 2.0f
@@ -85,6 +82,9 @@ typedef struct	s_ray {
 }	t_ray;
 
 # ifndef BONUS
+
+#  define WIDTH	400
+
 typedef struct	s_object
 {
 	int		type;
@@ -106,6 +106,9 @@ typedef	struct	s_scene
 
 #  include <stdlib.h>
 #  include "MLX42/MLX42_Int.h"
+
+#  define WIDTH		1600
+#  define HEIGHT	900
 
 typedef struct	s_material
 {
@@ -148,6 +151,7 @@ typedef struct	s_rtx
 {
 	bool	refresh;
 	int		pos[2];
+	int		size[2];
 	float	yaw;
 	float	pitch;
 	float	start_time;

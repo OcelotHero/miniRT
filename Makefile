@@ -10,7 +10,7 @@ SRC_R_M	= renderer ray
 SRC_MAN =
 
 # Bonus source files
-SRC_C_B = key_events loop_events mouse_events
+SRC_C_B = key_events loop_events mouse_events window_events
 SRC_R_B	=
 SRC_BNS = opengl
 
@@ -46,9 +46,9 @@ MLX42_N = mlx42
 MLX42_L	= $(addprefix $(LIB_DIR)/${MLX42_D}/lib, $(addsuffix .a, $(MLX42_N)))
 
 ##############################        Objects        ################################
-OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_PAR)))
+OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_PAR)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_MAT)))
-OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
+OBJS_B	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
 
 OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_C_M)))
 OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_R_M)))
@@ -74,9 +74,15 @@ RM		= rm -rf
 
 OSNAME	= $(shell uname -s)
 
+ifeq ($(shell test -d "/Users/${USER}/.brew"; echo $$?), 1)
+	BREW_D = homebrew
+else
+	BREW_D = .brew
+endif
+
 OPTS	+= -pthread -lglfw -ldl -lm
 ifeq (${OSNAME}, Darwin)
-	OPTS	+= -L"/Users/${USER}/homebrew/Cellar/glfw/3.3.8/lib/"
+	OPTS	+= -L"/Users/${USER}/${BREW_D}/Cellar/glfw/3.3.8/lib/"
 	OPTS	+= -framework Cocoa -framework OpenGL -framework IOKit
 else
 	OPTS	+= -lGL
@@ -84,7 +90,7 @@ endif
 
 all:		${NAME_M}
 
-${NAME_M}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_M}
+${NAME_M}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_M} ${INCL}/types.h
 			@${RM} ${OBJS_B}
 			@echo "    ${NAME_M}"
 			@${CC} ${FLAGS} ${OBJS} ${OBJS_M} ${MLX42_L} ${LIBFT_L} ${FPRNF_L} -o ${NAME_M} ${OPTS}
@@ -93,7 +99,7 @@ ${OBJ_DIR}/%.o: %.c | ${OBJ_DIR}
 			@echo "    $<"
 			@${CC} ${FLAGS} -c $< -o $@ -I ${INCL} -I ${LIB_DIR}/${FPRNF_D}/${INCL} \
 				-I ${LIB_DIR}/${LIBFT_D}/${INCL} -I ${LIB_DIR}/${MLX42_D}/include \
-				-I lib/stb_image ${OPTS}
+				-I lib/stb_image
 
 ${OBJ_DIR}:
 			@mkdir -p ${OBJ_DIR}
@@ -122,10 +128,10 @@ fclean:		clean
 			@make -C ${LIB_DIR}/${MLX42_D} fclean
 			${RM} ${NAME_M} ${NAME_B}
 
-bonus:		OPTS += -D BONUS
+bonus:		FLAGS += -D BONUS
 bonus:		${NAME_B}
 
-${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_B}
+${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_B} ${INCL}/types.h
 			@${RM} ${OBJS_M}
 			@echo "    ${NAME_B}"
 			@${CC} ${FLAGS} ${OBJS} ${OBJS_B} ${MLX42_L} ${LIBFT_L} ${FPRNF_L} -o ${NAME_B} ${OPTS}

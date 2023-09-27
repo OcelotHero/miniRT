@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 12:46:13 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 09:00:15 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 13:09:39 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define WIDTH 400
 
 t_vec3	ray_at(float t, t_ray ray);
 

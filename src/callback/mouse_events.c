@@ -6,12 +6,11 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 08:51:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 10:11:06 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 13:11:21 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "callbacks.h"
-#include "MLX42/MLX42_Int.h"
 
 /**
  * Callback function used to handle scrolling, scaling (zooming) the map view

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 10:14:50 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 12:19:03 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,6 +335,7 @@ int	move_scene_to_buffer(t_scene *scene)
 		glBufferSubData(GL_UNIFORM_BUFFER, 45344 + i * 32, 16, &obj->pos);
 		glBufferSubData(GL_UNIFORM_BUFFER, 45360 + i * 32, 16, &obj->param);
 	}
+	return (0);
 }
 
 int	setup_and_load_scene(t_scene *scene)
@@ -483,8 +484,8 @@ int	setup_framebuffer(t_rtx *rtx)
 	{
 		glGenTextures(1, &fbuffer_tex);
 		glBindTexture(GL_TEXTURE_2D, fbuffer_tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (int)(WIDTH / DENSITY),
-			(int)(HEIGHT / DENSITY), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, rtx->size[0], rtx->size[1],
+			0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
@@ -527,10 +528,10 @@ int	load_texture(t_rtx *rtx)
 
 int	main(int narg, char *args[])
 {
-	t_rtx	rtx = {0};
+	t_rtx	rtx = {.size = {WIDTH, HEIGHT}};
 	t_vec4	v;
 
-	rtx.mlx = mlx_init(WIDTH, HEIGHT, "miniRT", false);
+	rtx.mlx = mlx_init(rtx.size[0], rtx.size[1], "miniRT", true);
 	if (setup_shader_program(&rtx))
 		return (cleanup(&rtx, 1));
 	rtx.tex[0] = setup_framebuffer(&rtx);
@@ -549,6 +550,7 @@ int	main(int narg, char *args[])
 	mlx_mouse_hook(rtx.mlx, mouse_hook, &rtx);
 	mlx_cursor_hook(rtx.mlx, cursor_hook, &rtx);
 	mlx_scroll_hook(rtx.mlx, scroll_hook, &rtx);
+	mlx_resize_hook(rtx.mlx, resize_hook, &rtx);
 	mlx_loop_hook(rtx.mlx, loop_hook, &rtx);
 	rtx.refresh = true;
 	mlx_loop(rtx.mlx);
