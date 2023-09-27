@@ -6,12 +6,16 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/26 12:54:59 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 05:46:29 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPES_H
 # define TYPES_H
+
+# define MV_SPEED		5.f
+# define S_SENSITIVITY	1.f
+# define M_SENSITIVITY	.01f
 
 # define MAX_SIZE	256
 
@@ -22,6 +26,15 @@
 # define A_FLT2	1 << 4
 # define A_FOV	1 << 5
 # define A_COL	1 << 6
+
+# define WIDTH	1600
+# define HEIGHT	900
+
+# ifdef __APPLE__
+#  define DENSITY 2.0f
+# else
+#  define DENSITY 1.0f
+# endif
 
 enum e_token_types {
 	INVAL	= 0x00000,
@@ -87,6 +100,10 @@ typedef	struct	s_scene
 	t_object	objects[MAX_SIZE];
 }	t_scene;
 # else
+
+#  include <stdlib.h>
+#  include "MLX42/MLX42_Int.h"
+
 typedef struct	s_material
 {
 	t_vec4	albedo;
@@ -123,6 +140,24 @@ typedef	struct	s_scene
 	t_object	ambient;
 	t_object	lights[MAX_SIZE];
 }	t_scene;
+
+typedef struct	s_rtx
+{
+	bool	refresh;
+	int		pos[2];
+	float	yaw;
+	float	pitch;
+	float	start_time;
+	float	delta_time;
+	float	last_frame;
+	GLuint	buf_a_program;
+	GLuint	image_program;
+	GLuint	framebuffer;
+	GLuint	tex[16];
+	t_scene	scene;
+	mlx_t	*mlx;
+}	t_rtx;
+
 # endif
 
 #endif

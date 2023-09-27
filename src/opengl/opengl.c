@@ -1,16 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   opengl.c                                           :+:      :+:    :+:   */
+/*   refactored.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/26 12:50:44 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 06:50:09 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define BONUS
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 
@@ -19,7 +18,11 @@
 #include "MLX42/MLX42_Int.h"
 
 #include "types.h"
+#include "maths.h"
+#include "utils.h"
+#include "callbacks.h"
 
+#include <glob.h>
 #include <errno.h>
 
 /**
@@ -125,15 +128,6 @@ uint32_t	create_shader_program(const char *vert, const char *frag)
 	return ((success != 0 && vshader && fshader) * program);
 }
 
-#define WIDTH	1600
-#define HEIGHT	900
-
-# ifdef __APPLE__
-#  define DENSITY 2.0f
-# else
-#  define DENSITY 1.0f
-# endif
-
 #define SP	0x00800
 #define	CY	0x02000
 #define	CN	0x04000
@@ -142,19 +136,6 @@ uint32_t	create_shader_program(const char *vert, const char *frag)
 #define	QD	0x10000
 #define	DS	0x20000
 #define	TR	0x40000
-
-float		deltaTime = 0.0f;
-float		lastFrame = 0.0f;
-bool		resetFrame = false;
-t_scene		scene;
-
-t_vec4	vec4_elem_op(t_vec4 a, char op, t_vec4 b);
-t_vec4	vec4_scale(float a, t_vec4 v);
-t_vec4	vec4_normalize(t_vec4 a);
-float	vec4_dot(t_vec4 a, t_vec4 b);
-float	vec4_length(t_vec4 a);
-
-t_vec3	vec3_normalize(t_vec3 a);
 
 void	set_scene_geometry(t_scene *scene)
 {
@@ -359,35 +340,66 @@ int	move_scene_to_buffer(t_scene *scene)
 	}
 }
 
-GLuint	setup_and_load_scene(GLuint	program)
+int	setup_and_load_scene(t_scene *scene)
 {
-	uint32_t	ubo, objects, lights;
-
-	glGenBuffers(1, &ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-	glBufferData(GL_UNIFORM_BUFFER, 53536, NULL, GL_STATIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 45248);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 1, ubo, 45312, 8192);
-
-	lights = glGetUniformBlockIndex(program, "Lights");
-	objects = glGetUniformBlockIndex(program, "Objects");
-	glUniformBlockBinding(program, lights, 1);
-	glUniformBlockBinding(program, objects, 0);
-
-	scene.camera = (t_object){.pos		= {0.f, 0.f, -30.f,  0.f},
-							  .axis		= {0.f, 0.f,   1.f,  0.f},
-							  .param	= {0.f, 0.f,   0.f, 90.f}};
-	set_scene_geometry(&scene);
-	set_scene_material(&scene);
-	set_scene_light(&scene);
-	move_scene_to_buffer(&scene);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	return (ubo);
+	scene->camera = (t_object){.pos		= {0.f, 0.f, -30.f,  0.f},
+							   .axis	= {0.f, 0.f,   1.f,  0.f},
+							   .param	= {0.f, 0.f,   0.f, 90.f}};
+	set_scene_geometry(scene);
+	set_scene_material(scene);
+	set_scene_light(scene);
+	move_scene_to_buffer(scene);
+	return (0);
 }
 
-int	load_texture(char *path)
+int	setup_buffer_objects(t_rtx *rtx)
 {
-	int		width, height, channels;
+	GLuint	buf[3];
+	float	*v_scr;
+
+	glGenVertexArrays(1, &buf[0]);
+	glBindVertexArray(buf[0]);
+	v_scr  = (float []){-1.f, -1.f, -1.f, 1.f, 1.f, -1.f,
+		1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
+	glGenBuffers(1, &buf[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
+	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(*v_scr), v_scr, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
+		2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glGenBuffers(1, &buf[2]);
+	glBindBuffer(GL_UNIFORM_BUFFER, buf[2]);
+	glBufferData(GL_UNIFORM_BUFFER, 53536, NULL, GL_STATIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, buf[2], 0, 45248);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 1, buf[2], 45312, 8192);
+	glUniformBlockBinding(rtx->buf_a_program,
+		glGetUniformBlockIndex(rtx->buf_a_program, "Objects"), 0);
+	glUniformBlockBinding(rtx->buf_a_program,
+		glGetUniformBlockIndex(rtx->buf_a_program, "Lights"), 1);
+	return (!buf[0] || !buf[1] || !buf[2] || setup_and_load_scene(&rtx->scene));
+}
+
+/**
+ * Creates shader programs for different view modes.
+ *
+ * @param	fdf	Pointer to fdf struct
+ * @return	Whether the operation was successful
+ */
+static int	setup_shader_program(t_rtx *rtx)
+{
+	rtx->buf_a_program = create_shader_program("res/shaders/buffer_a.vert",
+		 "res/shaders/buffer_a.frag");
+	rtx->image_program = create_shader_program("res/shaders/image.vert",
+		"res/shaders/image.frag");
+	return (!rtx->buf_a_program || !rtx->image_program);
+}
+
+int	setup_texture(char *path)
+{
+	int		width;
+	int		height;
+	int		channels;
 	GLuint	tex;
 	uint8_t	*data;
 
@@ -395,202 +407,66 @@ int	load_texture(char *path)
 	glBindTexture(GL_TEXTURE_2D, tex);
 	stbi_set_flip_vertically_on_load(true);
 	data = stbi_load(path, &width, &height, &channels, 0);
-	if (data) {
+	if (data)
+	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB + (channels == 4), width, height,
 			0, GL_RGB + (channels == 4), GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
-	} else {
-		printf("%s tex failed to load\n", path);
-		return (-1);
 	}
+	else
+		return (printf("%s tex failed to load!\n", path) & 0);
 	stbi_image_free(data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	return (tex);
 }
 
-void	processInput(GLFWwindow	*window)
+int	setup_cubemap_textures(char *dir, char *path, int *im_prop, uint8_t **data)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
+	static char	*faces[] = {"Front", "Back", "Top", "Bottom", "Left", "Right"};
+	int			ret;
+	char		*wild;
+	glob_t		gs;
 
-	const float	cameraSpeed = 5.0f * deltaTime;
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		scene.camera.pos = vec4_elem_op(scene.camera.pos, '+', vec4_scale(cameraSpeed, scene.camera.axis));
-		resetFrame = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		scene.camera.pos = vec4_elem_op(scene.camera.pos, '-', vec4_scale(cameraSpeed, scene.camera.axis));
-		resetFrame = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		scene.camera.pos = vec4_elem_op(scene.camera.pos, '+',
-			vec4_scale(cameraSpeed, vec4_elem_op(scene.camera.axis, 'x', (t_vec4){0.f, 1.f, 0.f, 0.f})));
-		resetFrame = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		scene.camera.pos = vec4_elem_op(scene.camera.pos, '-',
-			vec4_scale(cameraSpeed, vec4_elem_op(scene.camera.axis, 'x', (t_vec4){0.f, 1.f, 0.f, 0.f})));
-		resetFrame = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		scene.camera.pos.y += cameraSpeed;
-		resetFrame = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		scene.camera.pos.y -= cameraSpeed;
-		resetFrame = true;
-	}
+	wild = strchr(dir, '*');
+	memcpy(path, dir, strlen(dir));
+	path[strlen(dir) - (wild != NULL)] = '\0';
+	sprintf(path, "%s%s.*", path, faces[im_prop[0]]);
+	ret = glob(path, 0, NULL, &gs);
+	if (ret == GLOB_NOMATCH)
+		return (printf("%s cubemap tex not found!\n", path));
+	if (ret)
+		return (printf("Glob error %s\n", strerror(errno)));
+	memcpy(path, gs.gl_pathv[0], strlen(gs.gl_pathv[0]) + 1);
+	globfree(&gs);
+	*data = stbi_load(path, &im_prop[0], &im_prop[1], &im_prop[2], 0);
+	if (!data)
+		return (printf("%s cubemap tex failed to load!\n", path));
+	return (0);
 }
 
-double	lastX, lastY;
-double	yaw, pitch;
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+int	setup_cubemap(char *dir)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == MLX_PRESS)
-		glfwGetCursorPos(window, &lastX, &lastY);
-}
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	double	delta[2] = {xpos - lastX, ypos - lastY};
-
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-	{
-		float xoffset = (delta[0] > 0) - (delta[0] < 0);
-		float yoffset = (delta[1] > 0) - (delta[1] < 0);
-		float sensitivity = 0.2f;
-
-		xoffset *= sensitivity;
-		yoffset *= sensitivity;
-
-		yaw += xoffset;
-		pitch += yoffset;
-
-		// make sure that when pitch is out of bounds, screen doesn't get flipped
-		if (pitch > 89.0f)
-			pitch = 89.0f;
-		if (pitch < -89.0f)
-			pitch = -89.0f;
-
-		scene.camera.axis.x = cos(yaw * M_PI / 180.0) * cos(pitch* M_PI / 180.0);
-		scene.camera.axis.y = sin(pitch* M_PI / 180.0);
-		scene.camera.axis.z = sin(yaw * M_PI / 180.0) * cos(pitch* M_PI / 180.0);
-
-		resetFrame = true;
-	}
-	lastX = xpos;
-	lastY = ypos;
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	scene.camera.param[3] -= (float)yoffset;
-	if (scene.camera.param[3]  < 1.0f)
-		scene.camera.param[3]  = 1.0f;
-	if (scene.camera.param[3]  > 179.0f)
-		scene.camera.param[3]  = 179.0f;
-	resetFrame = true;
-}
-
-int main()
-{
-	int width;
-	int height;
-
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenglContext", NULL, NULL);
-	if (!window)
-	{
-		dprintf(2, "failed to create window\n");
-		exit(-1);
-	}
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		dprintf(2, "failed to initialize glad with processes\n");
-		exit(-1);
-	}
-
-	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
-
-	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-
-	int samples = 4;
-	float quadVerts[] = {
-		-1.0, -1.0,
-		-1.0, 1.0,
-		1.0, -1.0,
-
-		1.0, -1.0,
-		-1.0, 1.0,
-		1.0, 1.0
-	};
-
-	GLuint	vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	GLuint	vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	GLuint	framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-	GLuint	iChannel0;
-	glGenTextures(1, &iChannel0);
-	glBindTexture(GL_TEXTURE_2D, iChannel0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (int)(width / DENSITY), (int)(height/ DENSITY), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, iChannel0, 0);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+	int		i;
+	int		im_prop[3];
+	char	path[512];
+	uint8_t	*data;
 	GLuint	cubemap;
+
 	glGenTextures(1, &cubemap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-
-	char	*faces[6] = {"res/cubemaps/GalleryFront.jpg",
-						 "res/cubemaps/GalleryBack.jpg",
-						 "res/cubemaps/GalleryTop.jpg",
-						 "res/cubemaps/GalleryBottom.jpg",
-						 "res/cubemaps/GalleryLeft.jpg",
-						 "res/cubemaps/GalleryRight.jpg"};
-
-	int	im_width, im_height, im_channels;
-	uint8_t	*data;
-
-	for (uint32_t i = 0; i < 6; i++) {
-		data = stbi_load(faces[i], &im_width, &im_height, &im_channels, 0);
-		if (data)
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB + (im_channels == 4),
-						 im_width, im_height, 0, GL_RGB + (im_channels == 4), GL_UNSIGNED_BYTE, data);
-		else
-			printf("Cubemap tex failed to load at path: %s\n", faces[i]);
+	i = -1;
+	while (++i < 6)
+	{
+		im_prop[0] = i;
+		if (setup_cubemap_textures(dir, path, im_prop, &data))
+			return (0);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
+			GL_RGB + (im_prop[2] == 4), im_prop[0], im_prop[1], 0,
+			GL_RGB + (im_prop[2] == 4), GL_UNSIGNED_BYTE, data);
 		stbi_image_free(data);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -598,84 +474,85 @@ int main()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	return (cubemap);
+}
 
-	uint32_t	buf_a_program = create_shader_program("res/shaders/buffer_a.vert", "res/shaders/buffer_a.frag");
-	uint32_t	image_program = create_shader_program("res/shaders/image.vert", "res/shaders/image.frag");
-	if (!buf_a_program && !image_program && dprintf(2, "Error\n"))
-		exit(-1);
+int	setup_framebuffer(t_rtx *rtx)
+{
+	GLuint	fbuffer_tex;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	int	tex[16] = {0};
-
-	tex[2] = load_texture("res/textures/Organic4.jpg");
-	tex[3] = load_texture("res/textures/Earthmap.jpg");
-
-	glUseProgram(buf_a_program);
-	glUniform1i(glGetUniformLocation(buf_a_program, "skybox"), 0);
-	glUniform1i(glGetUniformLocation(buf_a_program, "framebuffer"), 1);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, iChannel0);
-
-	for (int i = 2; i < 16; ++i) {
-		char	buffer[10];
-
-		sprintf(buffer, "tex%02d", i);
-		glUniform1i(glGetUniformLocation(buf_a_program, buffer), i);
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, tex[i]);
-	}
-
-	glUseProgram(image_program);
-	glUniform1i(glGetUniformLocation(image_program, "iChannel0"), 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, iChannel0);
-
-
-	GLuint	ubo = setup_and_load_scene(buf_a_program);
-	t_vec4	v = scene.camera.axis;
-	pitch = 90.0 - acos(v.y / sqrt(v.x * v.x + v.y * v.y + v.z * v.z)) * 180.0 / M_PI;
-	yaw = ((v.z >= 0) - (v.z < 0)) * acos(v.x / sqrt(v.x * v.x + v.z * v.z)) * 180.0 / M_PI;
-
-	glBindVertexArray(vao);
-	float	startFrame = glfwGetTime();
-	while (!glfwWindowShouldClose(window))
+	glGenFramebuffers(1, &rtx->framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, rtx->framebuffer);
 	{
-		float	currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-
-		processInput(window);
-
-		if (resetFrame) {
-			glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-			glBufferSubData(GL_UNIFORM_BUFFER, 16, 64, &scene.camera);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-			startFrame = glfwGetTime();
-			resetFrame = false;
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glViewport(0, 0, (int)(width / DENSITY), (int)(height/ DENSITY));
-		glUseProgram(buf_a_program);
-		glUniform2fv(glGetUniformLocation(buf_a_program, "iResolution"), 1, (float []){WIDTH, HEIGHT});
-		glUniform1i(glGetUniformLocation(buf_a_program, "iFrame"), (int)((glfwGetTime() - startFrame) * 60));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
+		glGenTextures(1, &fbuffer_tex);
+		glBindTexture(GL_TEXTURE_2D, fbuffer_tex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (int)(WIDTH / DENSITY),
+			(int)(HEIGHT / DENSITY), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+			GL_TEXTURE_2D, fbuffer_tex, 0);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			return (printf("Framebuffer is not complete!\n") & 0);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, width, height);
-		glUseProgram(image_program);
-		glUniform2fv(glGetUniformLocation(image_program, "iResolution"), 1, (float []){WIDTH, HEIGHT});
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
-	glfwTerminate();
+	return (fbuffer_tex);
+}
+
+int	load_texture(t_rtx *rtx)
+{
+	int		i;
+	char	buffer[10];
+
+	glUseProgram(rtx->buf_a_program);
+	glUniform1i(glGetUniformLocation(rtx->buf_a_program, "framebuffer"), 0);
+	glUniform1i(glGetUniformLocation(rtx->buf_a_program, "skybox"), 1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, rtx->tex[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, rtx->tex[1]);
+	i = 1;
+	while (++i < 16)
+	{
+		sprintf(buffer, "tex%02d", i);
+		glUniform1i(glGetUniformLocation(rtx->buf_a_program, buffer), i);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, rtx->tex[i]);
+	}
+	glUseProgram(rtx->image_program);
+	glUniform1i(glGetUniformLocation(rtx->image_program, "framebuffer"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, rtx->tex[0]);
+	return (0);
+}
+
+int main()
+{
+	t_rtx	rtx = {0};
+	t_vec4	v;
+
+	rtx.mlx = mlx_init(WIDTH, HEIGHT, "miniRT", false);
+	if (setup_shader_program(&rtx))
+		return (cleanup(&rtx, 1));
+	rtx.tex[0] = setup_framebuffer(&rtx);
+	rtx.tex[1] = setup_cubemap("res/cubemaps/Gallery*");
+	rtx.tex[2] = setup_texture("res/textures/Organic4.jpg");
+	rtx.tex[3] = setup_texture("res/textures/Earthmap.jpg");
+	if (!rtx.tex[0] || !rtx.tex[1] || !rtx.tex[2] || !rtx.tex[3])
+		return (cleanup(&rtx, 1));
+	load_texture(&rtx);
+	if (setup_buffer_objects(&rtx))
+		return (cleanup(&rtx, 1));
+	v = rtx.scene.camera.axis;
+	rtx.pitch = M_PI_2 - acos(v.y / sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
+	rtx.yaw = ((v.z >= 0) - (v.z < 0)) * acos(v.x / sqrt(v.x * v.x + v.z * v.z));
+	mlx_key_hook(rtx.mlx, key_hook, &rtx);
+	mlx_mouse_hook(rtx.mlx, mouse_hook, &rtx);
+	mlx_cursor_hook(rtx.mlx, cursor_hook, &rtx);
+	mlx_scroll_hook(rtx.mlx, scroll_hook, &rtx);
+	mlx_loop_hook(rtx.mlx, loop_hook, &rtx);
+	rtx.refresh = true;
+	mlx_loop(rtx.mlx);
 }

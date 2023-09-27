@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 19:28:57 by rraharja          #+#    #+#             */
-/*   Updated: 2023/08/17 16:53:27 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 07:00:11 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ t_vec3	vec3_elem_op(t_vec3 a, char op, t_vec3 b)
 			a.e[i] *= b.e[i];
 		else if (op == '/')
 			a.e[i] /= b.e[i];
-
 	}
 	return (a);
 }

@@ -2,7 +2,7 @@
 # Common source files
 SRC_PAR	= parser
 SRC_MAT = vec3 vec4
-SRC_UTL =
+SRC_UTL = utils
 
 # Mandatory source files
 SRC_C_M =
@@ -10,7 +10,7 @@ SRC_R_M	= renderer ray
 SRC_MAN =
 
 # Bonus source files
-SRC_C_B =
+SRC_C_B = key_events loop_events mouse_events
 SRC_R_B	=
 SRC_BNS = opengl
 
@@ -22,10 +22,10 @@ OBJ_DIR = obj
 # Subdirectories
 PARSR_D = parser
 MATHS_D = maths
-UTILS_D =
+UTILS_D = utils
 
 OPNGL_D = opengl
-CBACK_D =
+CBACK_D = callback
 RENDR_D = renderer
 MAN_DIR = .
 BNS_DIR =
@@ -93,7 +93,7 @@ ${OBJ_DIR}/%.o: %.c | ${OBJ_DIR}
 			@echo "    $<"
 			@${CC} ${FLAGS} -c $< -o $@ -I ${INCL} -I ${LIB_DIR}/${FPRNF_D}/${INCL} \
 				-I ${LIB_DIR}/${LIBFT_D}/${INCL} -I ${LIB_DIR}/${MLX42_D}/include \
-				-I lib/stb_image
+				-I lib/stb_image ${OPTS}
 
 ${OBJ_DIR}:
 			@mkdir -p ${OBJ_DIR}
@@ -122,6 +122,7 @@ fclean:		clean
 			@make -C ${LIB_DIR}/${MLX42_D} fclean
 			${RM} ${NAME_M} ${NAME_B}
 
+bonus:		OPTS += -D BONUS
 bonus:		${NAME_B}
 
 ${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_B}

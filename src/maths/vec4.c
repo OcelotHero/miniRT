@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 19:28:57 by rraharja          #+#    #+#             */
-/*   Updated: 2023/08/11 21:36:28 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/27 07:00:19 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,12 @@ t_vec4	vec4_elem_op(t_vec4 a, char op, t_vec4 b)
 {
 	int	i;
 
+	if (op == 'x')
+		return ((t_vec4){a.e[1] * b.e[2] - a.e[2] * b.e[1],
+				a.e[2] * b.e[0] - a.e[0] * b.e[2],
+				a.e[0] * b.e[1] - a.e[1] * b.e[0], 0.0f});
 	i = -1;
-	while (++i < 4)
+	while (++i < 3)
 	{
 		if (op == '+')
 			a.e[i] += b.e[i];
