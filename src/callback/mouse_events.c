@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 08:51:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 13:11:21 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/30 21:42:50 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ void	scroll_hook(double xdelta, double ydelta, void *param)
  */
 void	cursor_hook(double xpos, double ypos, void *param)
 {
-	double	*delta;
+	int		*delta;
 	t_rtx	*rtx;
 
 	rtx = (t_rtx *)param;
-	delta = (double []){xpos - rtx->pos[0], ypos - rtx->pos[1]};
+	delta = (int []){(int)xpos - rtx->pos[0], (int)ypos - rtx->pos[1]};
 	if (mlx_is_mouse_down(rtx->mlx, MLX_MOUSE_BUTTON_LEFT))
 	{
 		rtx->yaw += M_SENSITIVITY * ((delta[0] < 0) - (delta[0] > 0));

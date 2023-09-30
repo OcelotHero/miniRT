@@ -6,16 +6,22 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 20:53:34 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/09/30 21:31:43 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPES_H
 # define TYPES_H
 
-# define MV_SPEED		5.f
-# define S_SENSITIVITY	1.f
-# define M_SENSITIVITY	.01f
+# ifdef __APPLE__
+#  define DENSITY 2.0f
+# else
+#  define DENSITY 1.0f
+# endif
+
+# define MV_SPEED		5.f * DENSITY
+# define S_SENSITIVITY	1.f * DENSITY
+# define M_SENSITIVITY	.01f * DENSITY
 
 # define MAX_SIZE	256
 
@@ -26,12 +32,6 @@
 # define A_FLT2	1 << 4
 # define A_FOV	1 << 5
 # define A_COL	1 << 6
-
-# ifdef __APPLE__
-#  define DENSITY 2.0f
-# else
-#  define DENSITY 1.0f
-# endif
 
 # define STB_IMAGE_IMPLEMENTATION
 # define STB_IMAGE_RESIZE_IMPLEMENTATION
