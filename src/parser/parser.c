@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 15:18:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/26 12:54:33 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/03 15:20:21 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "get_next_line.h"
 
 #include "types.h"
+#include "maths.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -77,12 +78,12 @@ int	populate_buffer(char *str, float *mem, int type)
 	return (n);
 }
 
-int	save_object(t_object *object, int type, char *str)
+int	save_object(t_object *obj, int type, char *str)
 {
 	int		i[3];
 	float	*mem;
 
-	object->type = type;
+	obj->type = type;
 	i[0] = -1;
 	while (++i[0] < 7)
 	{
@@ -92,18 +93,18 @@ int	save_object(t_object *object, int type, char *str)
 		while (--i[1] >= 0)
 		{
 			i[2] = ((1 << i[0]) == A_NORM) + ((1 << i[0]) == A_COL) * 2;
-			mem = &((*(&(object->pos) + i[2])).e[2 - i[1]]);
+			mem = &((*(&(obj->pos) + i[2])).e[2 - i[1]]);
 			if ((1 << i[0]) & (A_PCNT | A_FLT1 | A_FLT2 | A_FOV))
-				mem = &object->param[i[0] - 2];
+				mem = &obj->param[i[0] - 2];
 			i[1] -= i[1] * (((A_PCNT | A_FLT1 | A_FLT2 | A_FOV)
 					& (1 << i[0])) > 0);
 			i[2] = populate_buffer(str, mem, (1 << i[0]));
-			if (i[2] == -1 || (i[1] > 0 && str[i[2]] != ','))
+			if (i[2] <= 0 || (i[1] > 0 && str[i[2]] != ','))
 				return (1);
 			str += i[2] + (i[2] > 0);
 		}
 	}
-	return (0);
+	return (0 || ((type & A_NORM) * (vec3_dot(obj->axis, obj->axis) == 0.f)));
 }
 
 int	save_objects(t_scene *scene, char *str)
@@ -130,7 +131,7 @@ int	save_objects(t_scene *scene, char *str)
 // 	t_scene	scene;
 // 	char	*line;
 
-// 	scene = (t_scene){0, {0}, {0}, {0}};
+// 	scene = (t_scene){0};
 // 	int fd = open("scene.rt", O_RDONLY);
 
 // 	line = get_next_line(fd);
