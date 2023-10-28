@@ -13,13 +13,12 @@
 #ifndef CALLBACKS_H
 # define CALLBACKS_H
 
-# include <math.h>
-
 # include "maths.h"
-# include "types.h"
 # include "utils.h"
 
 # include "MLX42/MLX42_Int.h"
+
+# include <math.h>
 
 void	key_hook(mlx_key_data_t keydata, void *param);
 void	cursor_hook(double xpos, double ypos, void *param);

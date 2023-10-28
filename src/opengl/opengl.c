@@ -6,14 +6,17 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/01 15:41:13 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/28 10:07:03 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
 #include "maths.h"
 #include "utils.h"
 #include "callbacks.h"
+#include "types_common.h"
+#include "types_bonus.h"
+#include "parser_common.h"
+#include "parser_bonus.h"
 
 #include "stb_image.h"
 #include "stb_image_resize.h"
@@ -125,14 +128,23 @@ uint32_t	create_shader_program(const char *vert, const char *frag)
 	return ((success != 0 && vshader && fshader) * program);
 }
 
-#define SP	0x00800
-#define CY	0x02000
-#define CN	0x04000
-#define BX	0x08000
-#define PL	0x01000
-#define QD	0x10000
-#define DS	0x20000
-#define TR	0x40000
+#define SP	0x7
+#define PL	0x8
+#define	CY	0x9
+#define	BX	0xa
+#define	CN	0xb
+#define	TR	0xc
+#define	QD	0xd
+#define	DS	0xe
+
+// #define SP	0x00800
+// #define CY	0x02000
+// #define CN	0x04000
+// #define BX	0x08000
+// #define PL	0x01000
+// #define QD	0x10000
+// #define DS	0x20000
+// #define TR	0x40000
 
 void	set_scene_geometry(t_scene *scene)
 {
@@ -233,60 +245,60 @@ void	set_scene_material(t_scene *scene)
 
 	// back wall
 	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.7f,   0.7f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	// floor
 	scene->materials[n++] = (t_material){.albedo	= {   1.0f,   1.0f,   1.0f},
 										 .texture	= {  64.0f, 128.0f,  -1.0f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	// ceiling
 	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.7f,   0.7f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	// left wall
 	scene->materials[n++] = (t_material){.albedo = {   0.7f,   0.1f,   0.1f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	// right wall
 	scene->materials[n++] = (t_material){.albedo = {   0.1f,   0.7f,   0.1f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	// light
 	scene->materials[n++] = (t_material){.emissive = {   1.0f,   0.9f,   0.5f},
 										 .intensity = 5.0f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 
 	// picture
 	scene->materials[n++] = (t_material){.albedo	= {   1.0f,   1.0f,   1.0f},
 										 .texture	= {   0.0f,   0.0f,   2.0f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	// strip pattern
 	scene->materials[n++] = (t_material){.albedo	= {   1.0f,   1.0f,   1.0f},
 										 .texture	= {  64.0f,   0.0f,  -1.0f},
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 
 	// spheres of varying specular roughness
 	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
 										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.0f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
 										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.25f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
 										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.5f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
 										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 0.75f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
 										 .spec_color		= {   0.3f,   1.0f,   0.3f},
 										 .spec_chance		= 1.0f,
 										 .spec_roughness	= 1.0f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 
 
 	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
@@ -294,21 +306,21 @@ void	set_scene_material(t_scene *scene)
 										 .refr_color		= {   0.0f,   0.0f,   0.0f},
 										 .spec_chance		= 0.02f,
 										 .refr_chance		= 0.96f,
-										 .IOR = 1.5f};
+										 .ior = 1.5f};
 	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
 										 .spec_color		= {   0.9f,   0.9f,   0.9f},
 										 .refr_color		= {   0.1f,   0.4f,   1.0f},
 										 .spec_chance		= 0.0002f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
-										 .IOR = 1.5f};
+										 .ior = 1.5f};
 	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
 										 .spec_color		= {   0.9f,   0.9f,   0.9f},
 										 .refr_color		= {   1.0f,   0.4f,   0.0f},
 										 .spec_chance		= 0.0002f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
-										 .IOR = 1.3f};
+										 .ior = 1.3f};
 
 	scene->materials[n++] = (t_material){.albedo			= {   0.9f,   0.9f,   0.9f},
 										 .spec_color		= {   0.9f,   0.9f,   0.9f},
@@ -316,38 +328,27 @@ void	set_scene_material(t_scene *scene)
 										 .spec_chance		= 0.02f,
 										 .refr_chance		= 1.00f,
 										 .intensity			= 1.0f,
-										 .IOR = 1.2f};
+										 .ior = 1.2f};
 
 	scene->materials[n++] = (t_material){.texture			= {   0.2f,   0.0f,   3.0f},
 										 .normal_map		= {   0.2f,   0.0f,  16.0f,   3.0f},
 										 .spec_color		= {   1.0f,   1.0f,   1.0f},
 										 .spec_chance		= 0.5f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 
 	scene->materials[n++] = (t_material){.albedo			= {   0.8f,   0.3f,   0.9f},
 										 .texture			= {  32.0f,  32.0f,  -1.0f},
 										 .spec_color		= {   0.8f,   0.3f,   0.9f},
 										 .spec_chance		= 0.5f,
-										 .IOR = 1.0f};
+										 .ior = 1.0f};
 }
 
 void	set_scene_light(t_scene *scene)
 {
-	int	n = 0;
-
-	scene->ambient = (t_object){.param  = {0.9f, 0.9f, 0.0f, 0.1f}};
-	scene->lights[n++] = (t_object){.pos	= { -12.40f, -10.00f,   0.00f},
-									.axis	= {   1.00f,   0.00f,   0.00f},
-									.i_cone	= 35.f,
-									.o_cone	= 55.f,
-									.param	= {   1.00f,   0.90f,   0.50f,   1.00f}};
-	scene->lights[n++] = (t_object){.pos	= { -12.40f,  10.00f,   0.00f},
-									.axis	= {   1.00f,   0.00f,   0.00f},
-									.i_cone	= 180.f,
-									.o_cone	= 180.f,
-									.param	= {   0.10f,   0.10f,   0.90f,   1.0f}};
-
-	scene->n_light = n;
+	save_objects(scene, "A 0.1 229.5,229.5,0");
+	save_objects(scene, "ls -12.4,-10,0 1,0,0 35 55 1.0 255,229.5,127.5");
+	save_objects(scene, "lp -12.4,10,0 1.0 25.5,25.5,229.5");
+	// printf("%d\n", save_objects(scene, "sp 0,0, 2 255,255,255"));
 }
 
 int	move_scene_to_buffer(t_scene *scene)

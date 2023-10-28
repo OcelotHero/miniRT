@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 08:51:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/30 21:42:50 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/27 22:14:05 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	scroll_hook(double xdelta, double ydelta, void *param)
 	t_rtx	*rtx;
 
 	rtx = (t_rtx *)param;
-	rtx->scene.camera.param[3] -= (float)ydelta * S_SENSITIVITY;
+	rtx->scene.camera.param[3] -= (float)ydelta * S_SENSITIVITY * DENSITY;
 	if (rtx->scene.camera.param[3] < 1.f)
 		rtx->scene.camera.param[3] = 1.f;
 	if (rtx->scene.camera.param[3] > 179.f)
@@ -46,16 +46,18 @@ void	scroll_hook(double xdelta, double ydelta, void *param)
 void	cursor_hook(double xpos, double ypos, void *param)
 {
 	int		*delta;
+	float	d;
 	t_rtx	*rtx;
 
 	rtx = (t_rtx *)param;
 	delta = (int []){(int)xpos - rtx->pos[0], (int)ypos - rtx->pos[1]};
 	if (mlx_is_mouse_down(rtx->mlx, MLX_MOUSE_BUTTON_LEFT))
 	{
-		rtx->yaw += M_SENSITIVITY * ((delta[0] < 0) - (delta[0] > 0));
-		rtx->pitch += M_SENSITIVITY * ((delta[1] > 0) - (delta[1] < 0));
+		d = M_SENSITIVITY * atan(rtx->scene.camera.param[3] / 120.f) * DENSITY;
+		rtx->yaw += d * ((delta[0] < 0) - (delta[0] > 0));
+		rtx->pitch += d * ((delta[1] > 0) - (delta[1] < 0));
 		if (fabs(rtx->pitch) > M_PI_2 - 0.01f)
-			rtx->pitch += M_SENSITIVITY * ((rtx->pitch < 0) - (rtx->pitch > 0));
+			rtx->pitch += d * ((rtx->pitch < 0) - (rtx->pitch > 0));
 		rtx->scene.camera.axis.x = cos(rtx->yaw) * cos(rtx->pitch);
 		rtx->scene.camera.axis.y = sin(rtx->pitch);
 		rtx->scene.camera.axis.z = sin(rtx->yaw) * cos(rtx->pitch);

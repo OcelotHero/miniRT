@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   maths.h                                            :+:      :+:    :+:   */
+/*   parser_common.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/28 20:40:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:45:52 by rraharja         ###   ########.fr       */
+/*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
+/*   Updated: 2023/10/28 11:04:16 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MATHS_H
-# define MATHS_H
+#ifndef PARSER_COMMON_H
+# define PARSER_COMMON_H
 
+# include "libft.h"
+
+# include "maths.h"
 # include "types_common.h"
 
-t_vec3	vec3_elem_op(t_vec3 a, char op, t_vec3 b);
-t_vec3	vec3_scale(float a, t_vec3 v);
-t_vec3	vec3_normalize(t_vec3 a);
-float	vec3_dot(t_vec3 a, t_vec3 b);
-float	vec3_length(t_vec3 a);
+# include <math.h>
 
-t_vec4	vec4_elem_op(t_vec4 a, char op, t_vec4 b);
-t_vec4	vec4_scale(float a, t_vec4 v);
-t_vec4	vec4_normalize(t_vec4 a);
-float	vec4_dot(t_vec4 a, t_vec4 b);
-float	vec4_length(t_vec4 a);
+int	n_atof(char *str, float *val);
+int	bns_obj_type(char *str);
+int	obj_type(char *str);
+int	populate_buffer(char *str, float *mem, int obj_type, int type);
 
 #endif

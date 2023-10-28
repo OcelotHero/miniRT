@@ -3,7 +3,7 @@ C 		-50,0,20 		0,0,0 							70
 R										width	height
 CB									intensity											path_to_cubemap
 lp 		-40,0,30 					0.7													255,255,255
-ls		pos				axis		intensity	inner	outer							r,g,b
+ls		pos				axis		inner	outer	intensity							r,g,b
 sp 		0,0,20 							20 												r,g,b | path_to_json(:obj_name)
 cy 		50.0,0.0,20.6	0,0,1.0			14.2	21.42 									r,g,b | path_to_json(:obj_name)
 bx		pos				axis		angle	{x_dim,y_dim,z_dim | x_dim y_dim z_dim}		r,g,b | path_to_json(:obj_name)

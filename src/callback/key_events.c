@@ -34,7 +34,7 @@ static void	move_camera(t_rtx *rtx, int movement)
 	t_object	*cam;
 
 	cam = &rtx->scene.camera;
-	dist = MV_SPEED * rtx->delta_time;
+	dist = MV_SPEED * DENSITY * rtx->delta_time;
 	if (movement & FWD)
 		cam->pos = vec3_elem_op(cam->pos, '+', vec3_scale(dist, cam->axis));
 	if (movement & BWD)
@@ -49,7 +49,7 @@ static void	move_camera(t_rtx *rtx, int movement)
 		cam->pos.y += dist;
 	if (movement & DEC)
 		cam->pos.y -= dist;
-	rtx->refresh = true;
+	rtx->refresh = movement > 0;
 }
 
 /**

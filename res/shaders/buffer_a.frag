@@ -47,14 +47,14 @@ uniform sampler2D	tex15;
 
 #define MAX_SIZE 256
 
-#define SPHERE	0x00800
-#define	CYLND	0x02000
-#define	CONE	0x04000
-#define	BOX		0x08000
-#define PLANE	0x01000
-#define	QUAD	0x10000
-#define	DISK	0x20000
-#define	TRIAGL	0x40000
+#define SPHERE	0x7
+#define PLANE	0x8
+#define	CYLND	0x9
+#define	BOX		0xa
+#define	CONE	0xb
+#define	TRIAGL	0xc
+#define	QUAD	0xd
+#define	DISK	0xe
 
 struct	SMaterial {
 	vec3	albedo;			// the color used for diffuse lighting
@@ -626,7 +626,7 @@ bool	diskIntersection(SRay ray, inout SHitRecord rec, SObject object) {
 // Scene functions
 //-----------------------------------------------------
 bool	objIntersection(SRay ray, SObject obj, inout SHitRecord rec) {
-	switch (obj.type.x & 0xfff00) {
+	switch (obj.type.x) {
 		case SPHERE:
 			return sphereIntersection(ray, rec, obj);
 		case CYLND:
@@ -963,14 +963,14 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 			throughput *= getTexture(rec, mat.texture)
 				* evaluateInteraction(nRay, rec, mat, cIOR, rngState, doSpecular, doRefraction);
 
+			// direct point light sampling
+			color += throughput * samplePointLight(ray, rec, mat, throughput, rngState,
+												   doSpecular, doRefraction);
+
 			// Since we chose randomly between diffuse, specular, refract,
 			// divide by the probability of choosing that specific interaction
 			// to make the throughput unbiased.
 			throughput /= rayProbability;
-
-			// direct point light sampling
-			color += throughput * samplePointLight(ray, rec, mat, throughput, rngState,
-												   doSpecular, doRefraction);
 
 			// update index-of-refraction to current medium
 			if ((rec.front && doRefraction == 1.0f) || (!rec.front && doSpecular == 1.0f))

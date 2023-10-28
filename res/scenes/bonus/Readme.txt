@@ -100,13 +100,13 @@ Valid attribute formating and their corresponding values for the new geometry:
 		x,y,z		- position vector
 			-> each value can be within the range of (-inf, inf)
 		x,y,z		- direction vector
-			-> each value can only be within the range of [0, 1]
-		intensity	- light intensity
-			-> value can only be within the range of [0, 1]
+			-> each value can only be within the range of [-1, 1]
 		inner		- spotlight inner cone angle cutoff
 			-> value can only be within the range of [0, 180]
 		outer		- spotlight outer cone angle cutoff
 			-> value can only be within the range of [inner, 180]
+		intensity	- light intensity
+			-> value can only be within the range of [0, 1]
 		r,g,b		- light color
 			-> each value can only be within the range of [0, 255]
 

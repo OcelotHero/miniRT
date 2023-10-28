@@ -6,11 +6,12 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 19:28:57 by rraharja          #+#    #+#             */
-/*   Updated: 2023/09/27 08:52:47 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/28 10:47:01 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+#include "maths.h"
+
 #include <math.h>
 
 t_vec3	vec3_elem_op(t_vec3 a, char op, t_vec3 b)
