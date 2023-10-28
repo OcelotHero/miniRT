@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 15:18:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:45:26 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/28 13:21:20 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,12 @@ int	populate_buffer(char *str, float *mem, int obj_type, int type)
 	static float	i_angle;
 
 	n = n_atof(str, mem);
-	if (((type == NORM) && (*mem < -1 || *mem > 1))
-		|| ((type == UIN8) && (*mem < 0 || *mem > 255))
-		|| ((type == PCNT) && (*mem < 0 || *mem > 1))
-		|| ((type == ANGL) && (*mem < 0 || *mem > 180))
-		|| ((type == OAGL) && (*mem < i_angle || *mem > 180)))
+	if ((type == NORM && (*mem < -1 || *mem > 1))
+		|| (type == UIN8 && (*mem < 0 || *mem > 255))
+		|| (type == PCNT && (*mem < 0 || *mem > 1))
+		|| (type == ANGL && (*mem < 0 || *mem > 180))
+		|| (type == OAGL && (*mem < i_angle || *mem > 180))
+		|| (obj_type == SIZE && (*mem < 0 || *mem > 3500)))
 		return (-1);
 	if (obj_type == SPLGHT && type == ANGL)
 		i_angle = *mem;

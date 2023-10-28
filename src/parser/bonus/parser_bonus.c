@@ -12,59 +12,71 @@
 
 #include "parser_bonus.h"
 
-int	save_material(t_material *mat, int type, char *str)
+int	save_material(t_material *mat, int type, char *s)
 {
 	return (1);
 }
 
-int	save_object(t_object *obj, t_material *mat, int type, char *str)
+int	save_object(t_object *obj, t_material *mat, int typ, char *s)
 {
 	int		i;
 	int		j;
 	int		n;
 
-	obj->type = type >> 27 & 0x1f;
+	obj->type = typ >> 27 & 0x1f;
 	i = 9;
-	while (--i > 0 || (!i && type >= AMBI && type <= SPLGHT))
+	while (--i > 0 || (!i && typ < SPHERE && typ != QMAP))
 	{
 		j = 3;
-		while (((type >> 3 * i) & 0x7) && --j >= 0)
+		while (((typ >> 3 * i) & 0x7) && --j >= 0)
 		{
-			n = populate_buffer(str, (float *)&obj->pos
-					+ ((int)fmax(i, 5) % 2 + (i < 5)) * 4
-					+ (i > 3 && i < 7) * 3 + (i < 4 && i) * (3 - i) + (2 - j),
-					type, (type >> 3 * i) & 0x7);
-			j -= j * (((type >> 3 * i) & 0x7) > NORM);
-			if (n <= 0 || (j > 0 && str[n] != ','))
+			n = populate_buffer(s, (float *)&obj->pos + (i > 3 && i < 7) * 3
+					+ ((int)fmax(i, 5) % 2 + (i < 5)) * 4 + (i < 4 && i)
+					* (3 - i) + (2 - j), typ, (typ >> 3 * i) & 0x7);
+			j -= j * (((typ >> 3 * i) & 0x7) > NORM);
+			if (n <= 0 || (j > 0 && s[n] != ','))
 				return (1);
-			str += n + (j > 0 && str[n] == ',');
+			s += n + (j > 0 && s[n] == ',');
 		}
 	}
 	if (!i)
-		return (save_material(mat, type, str));
-	return (0 || ((type >> 21 & 0x7) == NORM && vec3_length(obj->axis) == 0.f));
+		return (save_material(mat, typ, s));
+	while ((*s >= '\t' && *s <= '\r') || *s == ' ')
+		s++;
+	return (*s || ((typ >> 21 & 0x7) == NORM && vec3_length(obj->axis) == 0.f));
 }
 
-int	save_objects(t_scene *scene, char *str)
+int	save_objects(t_rtx *rtx, t_scene *scene, char *s)
 {
-	int	type;
+	int			typ;
+	t_object	obj;
 
-	while (*str == ' ' || *str == '\t')
-		str++;
-	type = obj_type(str);
-	str += (type != 0) + (type == QMAP || type >= PTLGHT);
-	if (type == AMBI && !scene->ambient.type)
-		return (save_object(&scene->ambient, NULL, type, str));
-	if (type == CAMERA && !scene->camera.type)
-		return (save_object(&scene->camera, NULL, type, str));
-	if ((type == PTLGHT || type == SPLGHT) && scene->n_light < MAX_SIZE)
+	while (*s == ' ' || *s == '\t')
+		s++;
+	typ = obj_type(s);
+	s += (typ != 0) + (typ == QMAP || typ >= PTLGHT);
+	if (typ == SIZE)
+	{
+		if (save_object(&obj, NULL, typ, s))
+			memcpy(rtx->size, (int []){WIDTH, HEIGHT}, 2 * sizeof(int));
+		else
+			memcpy(rtx->size,
+				(int []){obj.param[0], obj.param[1]}, 2 * sizeof(int));
+		return (0);
+	}
+	// if (typ == QMAP)
+	if (typ == AMBI && !scene->ambient.type)
+		return (save_object(&scene->ambient, NULL, typ, s));
+	if (typ == CAMERA && !scene->camera.type)
+		return (save_object(&scene->camera, NULL, typ, s));
+	if ((typ == PTLGHT || typ == SPLGHT) && scene->n_light < MAX_SIZE)
 	{
 		scene->lights[scene->n_light] = (t_object){.i_cone = 180.f,
 			.o_cone = 180.f};
-		return (save_object(&scene->lights[scene->n_light++], NULL, type, str));
+		return (save_object(&scene->lights[scene->n_light++], NULL, typ, s));
 	}
-	if (type >= SPHERE && scene->n_obj < MAX_SIZE)
+	if (typ >= SPHERE && scene->n_obj < MAX_SIZE)
 		return (save_object(&scene->objects[scene->n_obj],
-				&scene->materials[scene->n_obj++], type, str));
+				&scene->materials[scene->n_obj++], typ, s));
 	return (1);
 }

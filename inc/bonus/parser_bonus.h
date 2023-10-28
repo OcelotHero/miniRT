@@ -18,6 +18,6 @@
 
 int	save_material(t_material *mat, int type, char *str);
 int	save_object(t_object *obj, t_material *mat, int type, char *str);
-int	save_objects(t_scene *scene, char *str);
+int	save_objects(t_rtx *rtx, t_scene *scene, char *str);
 
 #endif
