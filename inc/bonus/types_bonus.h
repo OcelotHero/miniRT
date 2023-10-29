@@ -76,6 +76,7 @@ typedef struct s_rtx
 	float	start_time;
 	float	delta_time;
 	float	last_frame;
+	float	cb_intensity;
 	GLuint	buf_a_program;
 	GLuint	image_program;
 	GLuint	framebuffer;

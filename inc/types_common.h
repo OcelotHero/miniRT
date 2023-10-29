@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:01:17 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/28 17:22:32 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
 enum e_token_types {
 	INVAL	= (0x0),
 	SIZE	= (0x1 << 27 | FLTS << 9 | FLTS << 6),
-	CAMERA	= (0x2 << 27 | VECS << 24 | AXIS << 21 | FOFV << 9),
+	CAMERA	= (0x2 << 27 | VECS << 24 | AXIS << 21 | FOFV << 12),
 	QMAP	= (0x3 << 27 | INTN << 12 | COLR),
 	AMBI	= (0x4 << 27 | INTN << 12 | COLR),
 	PTLGHT	= (0x5 << 27 | VECS << 24 | INTN << 12 | COLR),

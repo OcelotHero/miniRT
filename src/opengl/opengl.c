@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 13:39:02 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/29 13:12:02 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -348,7 +348,6 @@ void	set_scene_light(t_rtx *rtx, t_scene *scene)
 	save_objects(rtx, scene, "A 0.1 229.5,229.5,0");
 	save_objects(rtx, scene, "ls -12.4,-10,0 1,0,0 35 55 1.0 255,229.5,127.5");
 	save_objects(rtx, scene, "lp -12.4,10,0 1.0 25.5,25.5,229.5");
-	// printf("%d\n", save_objects(scene, "sp 0,0, 2 255,255,255"));
 }
 
 int	move_scene_to_buffer(t_scene *scene)
@@ -373,9 +372,7 @@ int	setup_and_load_scene(t_rtx *rtx)
 	t_scene	*scene;
 
 	scene = &rtx->scene;
-	scene->camera = (t_object){.pos		= {0.f, 0.f,  30.f},
-							   .axis	= {0.f, 0.f,  -1.f},
-							   .param	= {0.f, 0.f,   0.f, 90.f}};
+	save_objects(rtx, scene, "C 0,0,30 0,0,-1 90");
 	set_scene_geometry(scene);
 	set_scene_material(scene);
 	set_scene_light(rtx, scene);
@@ -463,8 +460,10 @@ int	setup_cubemap_textures(char *dir, char *path, int *im_prop, uint8_t **data)
 	glob_t		gs;
 
 	wild = strchr(dir, '*');
-	memcpy(path, dir, strlen(dir));
-	path[strlen(dir) - (wild != NULL)] = '\0';
+	if (!wild)
+		return (printf("Missing wildcard in filepath '%s'!\n", dir));
+	memcpy(path, dir, wild - dir);
+	path[wild - dir] = '\0';
 	sprintf(path, "%s%s.*", path, faces[im_prop[0]]);
 	ret = glob(path, 0, NULL, &gs);
 	if (ret == GLOB_NOMATCH)
