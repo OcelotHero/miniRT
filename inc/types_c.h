@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   types_common.h                                     :+:      :+:    :+:   */
+/*   types_c.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 17:22:32 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/30 07:35:22 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TYPES_COMMON_H
-# define TYPES_COMMON_H
+#ifndef TYPES_C_H
+# define TYPES_C_H
 
 # ifdef __APPLE__
 #  define DENSITY 2.0f

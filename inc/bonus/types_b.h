@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   types_bonus.h                                      :+:      :+:    :+:   */
+/*   types_b.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TYPES_BONUS_H
-# define TYPES_BONUS_H
+#ifndef TYPES_B_H
+# define TYPES_B_H
 
 # include <stdlib.h>
 # include "MLX42/MLX42_Int.h"

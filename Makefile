@@ -1,17 +1,17 @@
 ############################### Files and directories ###############################
 # Common source files
-SRC_PAR	= parser_common
+SRC_PAR	= parser_c
 SRC_MAT = vec3 vec4
 SRC_UTL = utils
 
 # Mandatory source files
-SRC_P_M = parser_mandatory
+SRC_P_M = parser_m
 SRC_C_M =
-SRC_R_M	= renderer ray
-SRC_MAN =
+SRC_R_M	= renderer intersection
+SRC_MAN = minirt
 
 # Bonus source files
-SRC_P_B = parser_bonus
+SRC_P_B = parser_b
 SRC_C_B = key_events loop_events mouse_events window_events
 SRC_R_B	=
 SRC_BNS = opengl

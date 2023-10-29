@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   callbacks.h                                        :+:      :+:    :+:   */
+/*   callback.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CALLBACKS_H
-# define CALLBACKS_H
+#ifndef CALLBACK_H
+# define CALLBACK_H
 
 # include "maths.h"
 # include "utils.h"

@@ -6,14 +6,14 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 20:40:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:45:52 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/30 07:36:45 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MATHS_H
 # define MATHS_H
 
-# include "types_common.h"
+# include "types_c.h"
 
 t_vec3	vec3_elem_op(t_vec3 a, char op, t_vec3 b);
 t_vec3	vec3_scale(float a, t_vec3 v);

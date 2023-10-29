@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "callbacks.h"
+#include "callback.h"
 
 /**
  * Helper function to set OpenGL int uniform value.

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_bonus.c                                     :+:      :+:    :+:   */
+/*   parser_b.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,18 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser_bonus.h"
+#include "parser_b.h"
 
 int	save_material(t_rtx *rtx, t_material *mat, int type, char *s)
 {
-	return (1);
+	// if (type == QMAP)
+	// 	rtx->tex[0] = setup_cubemap(s);
+	// return (rtx->tex[0] == 0);
 }
 
 int	save_object(t_rtx *rtx, t_object *obj, int type, char *s)
 {
-	int		i;
-	int		j;
-	int		n;
+	int	i;
+	int	j;
+	int	n;
 
 	obj->type = type >> 27 & 0x1f;
 	i = 9;

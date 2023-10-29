@@ -6,11 +6,11 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 08:51:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/27 22:14:05 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/29 18:58:59 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "callbacks.h"
+#include "callback.h"
 
 /**
  * Callback function used to handle scrolling, scaling (zooming) the map view

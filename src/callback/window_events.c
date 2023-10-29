@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "callbacks.h"
+#include "callback.h"
 
 /**
  * Callback function used to handle window resizing to maintain correct aspect

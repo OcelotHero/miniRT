@@ -6,17 +6,17 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/29 13:12:02 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/10/30 07:38:08 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "maths.h"
 #include "utils.h"
-#include "callbacks.h"
-#include "types_common.h"
-#include "types_bonus.h"
-#include "parser_common.h"
-#include "parser_bonus.h"
+#include "callback.h"
+#include "types_c.h"
+#include "types_b.h"
+#include "parser_c.h"
+#include "parser_b.h"
 
 #include "stb_image.h"
 #include "stb_image_resize.h"

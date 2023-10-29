@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_mandatory.c                                 :+:      :+:    :+:   */
+/*   parser_m.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser_mandatory.h"
+#include "parser_m.h"
 
 int	save_object(t_object *obj, int type, char *s)
 {
-	int		i;
-	int		j;
-	int		n;
+	int	i;
+	int	j;
+	int	n;
 
 	obj->type = type >> 27 & 0x1f;
 	i = 9;

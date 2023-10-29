@@ -1,36 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   types_mandatory.h                                  :+:      :+:    :+:   */
+/*   parser_m.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/28 10:01:19 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:01:19 by rraharja         ###   ########.fr       */
+/*   Created: 2023/10/28 10:08:55 by rraharja          #+#    #+#             */
+/*   Updated: 2023/10/28 10:08:55 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TYPES_MANDATORY_H
-# define TYPES_MANDATORY_H
+#ifndef PARSER_M_H
+# define PARSER_M_H
 
-# define WIDTH	400
+#include "parser_c.h"
+#include "types_m.h"
 
-typedef struct s_object
-{
-	int		type;
-	t_vec3	pos;
-	t_vec3	axis;
-	t_vec3	color;
-	float	param[4];
-}	t_object;
-
-typedef struct s_scene
-{
-	int			n_obj;
-	t_object	ambient;
-	t_object	camera;
-	t_object	light;
-	t_object	objects[MAX_SIZE];
-}	t_scene;
+int	save_object(t_object *obj, int type, char *str);
+int	save_objects(t_scene *scene, char *str);
 
 #endif

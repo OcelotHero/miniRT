@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ray.c                                              :+:      :+:    :+:   */
+/*   parser_c.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/10 18:46:15 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:54:35 by rraharja         ###   ########.fr       */
+/*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
+/*   Updated: 2023/10/30 07:35:12 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types_common.h"
+#ifndef PARSER_C_H
+# define PARSER_C_H
 
-t_vec3	vec3_elem_op(t_vec3 a, char op, t_vec3 b);
-t_vec3	vec3_scale(float a, t_vec3 v);
+# include "libft.h"
 
-t_vec3	ray_at(float t, t_ray ray)
-{
-	return (vec3_elem_op(ray.ori, '+', vec3_scale(t, ray.dir)));
-}
+# include "maths.h"
+# include "types_c.h"
+
+# include <math.h>
+
+int	n_atof(char *str, float *val);
+int	bns_obj_type(char *str);
+int	obj_type(char *str);
+int	populate_buffer(char *str, float *mem, int obj_type, int type);
+
+#endif
