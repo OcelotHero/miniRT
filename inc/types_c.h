@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/30 07:35:22 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/02 18:02:46 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,13 @@
 # define COLR	UIN8
 # define AXIS	NORM
 # define NRML	NORM
+
+# define RED	"\033[31;1m"
+# define END	"\033[0m"
+
+# define E_USG	"To use run:\n\t./minirt <path_to_scene>\n"
+# define E_OPN	"Unable to open %s\n"
+# define E_PRS	"Error parsing the following line:\n%3d\t%s\n\t"RED"%s"END"\n"
 
 enum e_token_types {
 	INVAL	= (0x0),

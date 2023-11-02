@@ -82,7 +82,7 @@ char	*ft_processor(int fd, char *str, char **buffer)
 	while ((*buffer)[n] && (*buffer)[n] != '\n')
 		n++;
 	n = n * ((*buffer)[n] == '\n') - !((*buffer)[n]);
-	if (n != -1)
+	if (n != -1 && fd >= 0)
 		return (ft_extract_join(str, *buffer, n + 1));
 	tmp = ft_strjoin(str, *buffer);
 	ft_free(&str);

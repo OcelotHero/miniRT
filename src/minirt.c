@@ -13,11 +13,12 @@
 #include "get_next_line.h"
 
 #include "maths.h"
+#include "utils.h"
 #include "renderer.h"
-#include "types_common.h"
-#include "types_mandatory.h"
-#include "parser_common.h"
-#include "parser_mandatory.h"
+#include "types_c.h"
+#include "types_m.h"
+#include "parser_c.h"
+#include "parser_m.h"
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -47,34 +48,6 @@ void	setup_camera(t_scene *scene, t_cam *cam)
 			vec3_scale(.5f, vec3_elem_op(cam->delta_u, '+', cam->delta_v)));
 }
 
-int	setup_scene(t_scene *scene, t_cam *cam, int narg, char **args)
-{
-	int		fd;
-	char	*line;
-	char	*endl;
-
-	if (narg != 2)
-		return (printf("Invalid argument\n"));
-	fd = open(args[1], O_RDONLY);
-	if (fd < 0)
-		return (printf("Unable to open %s\n", args[1]));
-	line = get_next_line(fd);
-	while (line)
-	{
-		if (save_objects(scene, line))
-		{
-			endl = ft_strchr(line, '\n');
-			if (endl)
-				*endl = '\0';
-			return (printf("Error parsing\n\t%s\n", line));
-		}
-		free(line);
-		line = get_next_line(fd);
-	}
-	setup_camera(scene, cam);
-	return (0);
-}
-
 void	key_hook(mlx_key_data_t keydata, void *param)
 {
 	mlx_t		*mlx;
@@ -87,8 +60,51 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 	}
 }
 
+int	parse_error(int m, int n, char *line)
+{
+	int		i;
+	char	*endl;
+	char	buf[512];
+
+	n *= n > 0;
+	endl = ft_strchr(line, '\n');
+	if (endl)
+	*endl = '\0';
+	i = -1;
+	while (++i < n || ft_isspace(line[i]))
+		buf[i] = ft_isspace(line[i]) * line[i] + !ft_isspace(line[i]) * ' ';
+	ft_memcpy(&buf[i], "^", 2);
+	return (error_msg(E_PRS, m, line, buf));
+}
+
+int	setup_scene(t_scene *scene, t_cam *cam, int fd)
+{
+	int		i;
+	int		n;
+	char	*line;
+
+	i = 0;
+	line = get_next_line(fd);
+	while (line && ++i)
+	{
+		n = save_objects(scene, line);
+		if (n)
+			parse_error(i, n, line);
+		free(line);
+		if (n)
+		{
+			get_next_line(-fd);
+			return (1);
+		}
+		line = get_next_line(fd);
+	}
+	setup_camera(scene, cam);
+	return (0);
+}
+
 int	main(int narg, char **args)
 {
+	int			fd;
 	t_cam		cam;
 	t_scene		scene;
 	mlx_t		*mlx;
@@ -96,8 +112,14 @@ int	main(int narg, char **args)
 
 	scene = (t_scene){0};
 	cam = (t_cam){WIDTH, HEIGHT, SAMPLE};
-	if (setup_scene(&scene, &cam, narg, args))
-		return (1);
+	if (narg != 2)
+		return (error_msg(E_USG));
+	fd = open(args[1], O_RDONLY);
+	if (fd < 0)
+		return (error_msg(E_OPN, args[1]));
+	if (setup_scene(&scene, &cam, fd))
+		return (close(fd) || 1);
+	close(fd);
 	mlx = mlx_init(cam.i_width, cam.i_height, "miniRT", true);
 	img = mlx_new_image(mlx, cam.i_width, cam.i_height);
 	render(&cam, &scene, img);

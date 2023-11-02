@@ -50,7 +50,7 @@ MLX42_L	= $(addprefix $(LIB_DIR)/${MLX42_D}/lib, $(addsuffix .a, $(MLX42_N)))
 ##############################        Objects        ################################
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_PAR)))
 OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_MAT)))
-OBJS_B	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
+OBJS	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_UTL)))
 
 OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_P_M)))
 OBJS_M	+= $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_C_M)))

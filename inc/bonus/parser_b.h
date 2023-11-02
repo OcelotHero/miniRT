@@ -16,8 +16,8 @@
 #include "parser_c.h"
 #include "types_b.h"
 
-int	save_material(t_rtx *rtx, t_material *mat, int type, char *str);
-int	save_object(t_rtx *rtx, t_object *obj, int type, char *str);
+int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n);
+int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n);
 int	save_objects(t_rtx *rtx, t_scene *scene, char *str);
 
 #endif

@@ -12,49 +12,52 @@
 
 #include "parser_m.h"
 
-int	save_object(t_object *obj, int type, char *s)
+int	save_object(t_object *obj, char *s, int *n)
 {
 	int	i;
 	int	j;
-	int	n;
+	int	m;
 
-	obj->type = type >> 27 & 0x1f;
+	obj->type = n[1] >> 27 & 0x1f;
 	i = 9;
 	while (--i >= 0)
 	{
 		j = 3;
-		while (((type >> 3 * i) & 0x7) && --j >= 0)
+		while (((n[1] >> 3 * i) & 0x7) && --j >= 0)
 		{
-			n = populate_buffer(s, (float *)&obj->pos + (i > 3 && i < 7) * 3
-					+ ((int)fmax(i, 5) % 2 + (2 - !i) * (i < 5)) * 3 + (3 - i)
-					* (i < 4 && i) + (2 - j), type, (type >> 3 * i) & 0x7);
-			j -= j * (((type >> 3 * i) & 0x7) > NORM);
-			if (n <= 0 || (j > 0 && s[n] != ','))
-				return (1);
-			s += n + (j > 0 && s[n] == ',');
+			m = populate_buffer(&s[*n], (float *)&obj->pos + (2 - j) + (3 - i)
+					* (i < 4 && i) + ((int)fmax(i, 5) % 2 + (2 - !i) * (i < 5))
+					* 3 + (i > 3 && i < 7) * 3, n[1], (n[1] >> 3 * i) & 0x7);
+			j -= j * (((n[1] >> 3 * i) & 0x7) > NORM);
+			if (m <= 0 || (j && s[*n + m] != ',')
+				|| (i == 7 && !j && vec3_length(obj->axis) == 0.f))
+				return (*n);
+			*n += m + (j && s[*n + m] == ',');
 		}
 	}
-	while (ft_isspace(*s))
-		s++;
-	return (*s
-		|| ((type >> 21 & 0x7) == NORM && vec3_length(obj->axis) == 0.f));
+	while (ft_isspace(s[*n]))
+		(*n)++;
+	return (*n * (s[*n] != '\0'));
 }
 
 int	save_objects(t_scene *scene, char *s)
 {
+	int	n;
 	int	type;
 
-	while (ft_isspace(*s) && *s != '\n')
-		s++;
-	type = obj_type(s);
-	s += (type != 0) + (type >= SPHERE);
+	n = 0;
+	while (ft_isspace(s[n]) && s[n] != '\n')
+		n++;
+	type = obj_type(&s[n]);
+	n += (type != 0) + (type >= SPHERE);
 	if (type == AMBI && !scene->ambient.type)
-		return (save_object(&scene->ambient, type, s));
+		return (save_object(&scene->ambient, s, (int []){n, type}));
 	if (type == CAMERA && !scene->camera.type)
-		return (save_object(&scene->camera, type, s));
+		return (save_object(&scene->camera, s, (int []){n, type}));
 	if (type == PTLGHT && !scene->light.type)
-		return (save_object(&scene->light, type, s));
+		return (save_object(&scene->light, s, (int []){n, type}));
 	if (type >= SPHERE && scene->n_obj < MAX_SIZE)
-		return (save_object(&scene->objects[scene->n_obj++], type, s));
-	return (*s && *s != '\n');
+		return (save_object(&scene->objects[scene->n_obj++], s,
+				(int []){n, type}));
+	return (-(s[n] && s[n] != '\n'));
 }
