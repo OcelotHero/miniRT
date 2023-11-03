@@ -1,0 +1,10 @@
+{
+	"marble" :
+	{
+		"texture"	: "res/textures/Organic4.jpg"
+	},
+	"strip" :
+	{
+		"texture"	: "checkered: 64, 0"
+	}
+}

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/30 07:38:08 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/03 22:50:22 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,7 +330,8 @@ void	set_scene_material(t_scene *scene)
 										 .intensity			= 1.0f,
 										 .ior = 1.2f};
 
-	scene->materials[n++] = (t_material){.texture			= {   0.2f,   0.0f,   3.0f},
+	scene->materials[n++] = (t_material){.albedo			= {   1.0f,   1.0f,   1.0f},
+										 .texture			= {   0.2f,   0.0f,   3.0f},
 										 .normal_map		= {   0.2f,   0.0f,  16.0f,   3.0f},
 										 .spec_color		= {   1.0f,   1.0f,   1.0f},
 										 .spec_chance		= 0.5f,

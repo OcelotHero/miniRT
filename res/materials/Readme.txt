@@ -45,14 +45,12 @@ Valid attribute formating and their corresponding values:
 
 //------------------------------------------------------------------------------
 Memory layout packing for the attribute values:
-	albedo, emissive, specularColor, refractionColor (vec4)
-		r,g,b
-			-> |r			|g			|b			|
+	texture (vec3)
 		path_to_texture(:u_offset,v_offset)
 			-> |u_offset	|v_offset	|tex_index	|
 		checkered(:u_scale,v_scale)
 			-> |u_scale		|v_scale	|-1			|
 
-	normalMap
+	normalMap (vec4)
 		path_to_texture:(u_offset,v_offset,) scale
 			-> |u_offset	|v_offset	|scale		|tex_index	|

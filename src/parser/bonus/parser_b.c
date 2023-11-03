@@ -84,7 +84,7 @@ int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 		{
 			l = populate_buffer(&s[*n], (float *)&obj->pos + (2 - j) + (3 - i)
 					* (i < 4 && i) + ((int)fmax(i, 5) % 2 + (i < 5)) * 4
-					+ (i > 3 && i < 7) * 3, n[1], (n[1] >> 3 * i) & 0x7);
+					+ (i > 3 && i < 7) * 3, n[1], i);
 			j -= j * (((n[1] >> 3 * i) & 0x7) > NORM);
 			if (l <= 0 || (j && s[*n + l] != ',')
 				|| (i == 7 && !j && vec3_length(obj->axis) == 0.f))
@@ -107,6 +107,8 @@ int	save_objects(t_rtx *rtx, t_scene *scene, char *s)
 	n = 0;
 	while (ft_isspace(s[n]) && s[n] != '\n')
 		n++;
+	if (s[n] == '#')
+		return (0);
 	type = obj_type(&s[n]);
 	n += (type != 0) + (type == QMAP || type >= PTLGHT);
 	if (type == SIZE && !save_object(rtx, &o, s, (int []){n, type}))

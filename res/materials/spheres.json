@@ -1,0 +1,31 @@
+{
+	"sp0" :
+	{
+		"specularColor"		: "76.5, 255, 76.5",
+		"specularChance"	: 1
+	},
+	"sp1" :
+	{
+		"specularColor"		: "76.5, 255, 76.5",
+		"specularChance"	: 1.0,
+		"specularRoughness"	: 0.25
+	},
+	"sp2" :
+	{
+		"specularColor"		: "76.5, 255, 76.5",
+		"specularChance"	: 1.0,
+		"specularRoughness"	: 0.5
+	},
+	"sp3" :
+	{
+		"specularColor"		: "76.5, 255, 76.5",
+		"specularChance"	: 1.0,
+		"specularRoughness"	: 0.75
+	},
+	"sp4" :
+	{
+		"specularColor"		: "76.5, 255, 76.5",
+		"specularChance"	: 1,
+		"specularRoughness"	: 1
+	}
+}

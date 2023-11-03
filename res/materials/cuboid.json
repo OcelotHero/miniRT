@@ -1,0 +1,6 @@
+{
+	"albedo"			: "204, 76.5, 229.5",
+	"texture"			: "checkered: 32, 32",
+	"specularColor"		: "204, 76.5, 229.5",
+	"specularChance"	: 0.5
+}
