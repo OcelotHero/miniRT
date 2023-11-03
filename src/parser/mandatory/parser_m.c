@@ -16,7 +16,7 @@ int	save_object(t_object *obj, char *s, int *n)
 {
 	int	i;
 	int	j;
-	int	m;
+	int	l;
 
 	obj->type = n[1] >> 27 & 0x1f;
 	i = 9;
@@ -25,14 +25,14 @@ int	save_object(t_object *obj, char *s, int *n)
 		j = 3;
 		while (((n[1] >> 3 * i) & 0x7) && --j >= 0)
 		{
-			m = populate_buffer(&s[*n], (float *)&obj->pos + (2 - j) + (3 - i)
+			l = populate_buffer(&s[*n], (float *)&obj->pos + (2 - j) + (3 - i)
 					* (i < 4 && i) + ((int)fmax(i, 5) % 2 + (2 - !i) * (i < 5))
 					* 3 + (i > 3 && i < 7) * 3, n[1], (n[1] >> 3 * i) & 0x7);
 			j -= j * (((n[1] >> 3 * i) & 0x7) > NORM);
-			if (m <= 0 || (j && s[*n + m] != ',')
+			if (l <= 0 || (j && s[*n + l] != ',')
 				|| (i == 7 && !j && vec3_length(obj->axis) == 0.f))
 				return (*n);
-			*n += m + (j && s[*n + m] == ',');
+			*n += l + (j && s[*n + l] == ',');
 		}
 	}
 	while (ft_isspace(s[*n]))

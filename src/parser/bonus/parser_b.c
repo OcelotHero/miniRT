@@ -12,18 +12,68 @@
 
 #include "parser_b.h"
 
+int	parse_json(t_rtx *rtx, t_material *mat, char *s)
+{
+	return (1);
+}
+
+int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
+{
+	int		r;
+	char	c;
+	char	*sep;
+
+	sep = &s[*n];
+	if (*sep == '"')
+		sep = ft_strchr(&s[*n + 1], '"');
+	else
+		while (!ft_isspace(*sep))
+			sep++;
+	if (!sep)
+		return (0);
+	c = *sep;
+	*sep = '\0';
+	if (n[1] == QMAP)
+	{
+		rtx->tex[0] = setup_cubemap(&s[*n + (s[*n] == '"')]);
+		*sep = c;
+		return ((sep - &s[*n]) * (rtx->tex[0] != 0));
+	}
+	r = parse_json(rtx, mat, &s[*n + (s[*n] == '"')]);
+	*sep = c;
+	return ((sep - &s[*n]) * !r);
+}
+
 int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
 {
-	// if (type == QMAP)
-	// 	rtx->tex[0] = setup_cubemap(s);
-	// return (rtx->tex[0] == 0);
+	int	i;
+	int	l;
+	int	m;
+
+	i = 3;
+	m = *n;
+	while (n[1] != QMAP && --i >= 0)
+	{
+		l = populate_buffer(&s[m], &mat->albedo.e[2 - i], n[1], COLR);
+		if (l <= 0 || (i && s[m + l] != ','))
+			break ;
+		m += l + (i && s[m + l] == ',');
+	}
+	if (n[1] == QMAP || i > -1)
+		m = *n + parse_path(rtx, mat, s, n);
+	else
+		mat->IOR = 1;
+	while (ft_isspace(s[m]))
+		m++;
+	*n += m;
+	return (s[*n] != '\0');
 }
 
 int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 {
 	int	i;
 	int	j;
-	int	m;
+	int	l;
 
 	obj->type = n[1] >> 27 & 0x1f;
 	i = 9;
@@ -32,14 +82,14 @@ int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 		j = 3;
 		while (((n[1] >> 3 * i) & 0x7) && --j >= 0)
 		{
-			m = populate_buffer(&s[*n], (float *)&obj->pos + (2 - j) + (3 - i)
+			l = populate_buffer(&s[*n], (float *)&obj->pos + (2 - j) + (3 - i)
 					* (i < 4 && i) + ((int)fmax(i, 5) % 2 + (i < 5)) * 4
 					+ (i > 3 && i < 7) * 3, n[1], (n[1] >> 3 * i) & 0x7);
 			j -= j * (((n[1] >> 3 * i) & 0x7) > NORM);
-			if (m <= 0 || (j && s[*n + m] != ',')
+			if (l <= 0 || (j && s[*n + l] != ',')
 				|| (i == 7 && !j && vec3_length(obj->axis) == 0.f))
-				return (1);
-			*n += m + (j && s[*n + m] == ',');
+				return (*n);
+			*n += l + (j && s[*n + l] == ',');
 		}
 	}
 	while (ft_isspace(s[*n]) && (i || !i && s[*n] != '\n'))
