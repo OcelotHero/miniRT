@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_b.h                                         :+:      :+:    :+:   */
+/*   opengl.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/28 10:08:37 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/28 10:08:37 by rraharja         ###   ########.fr       */
+/*   Created: 2023/11/09 07:16:28 by rraharja          #+#    #+#             */
+/*   Updated: 2023/11/09 07:16:28 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSER_BONUS_H
-# define PARSER_BONUS_H
+#ifndef OPENGL_H
+# define OPENGL_H
 
-# include "opengl.h"
+# include "types_c.h"
 # include "types_b.h"
-# include "parser_c.h"
 
-int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n);
-int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n);
-int	save_objects(t_rtx *rtx, t_scene *scene, char *str);
+# include <glob.h>
+# include <errno.h>
+
+int	setup_framebuffer(t_rtx *rtx);
+int	setup_texture(t_rtx *rtx, char *path, int type);
+int	setup_2d_texture(t_rtx *rtx, char *path);
+int	setup_cubemap(t_rtx *rtx, char *dir);
+int	setup_cubemap_texture(char **buf, char *dir, int *prop, uint8_t **im);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 15:18:10 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/03 21:22:06 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/09 06:55:34 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int	populate_buffer(char *str, float *mem, int obj_type, int i)
 		i_angle = *mem;
 	if (type == UIN8)
 		*mem /= 255.f;
-	if (((obj_type != SIZE || obj_type != BOX) && type == FLTS)
+	if (((obj_type != SIZE && obj_type != BOX) && type == FLTS)
 		|| (obj_type == BOX && i == 3))
 		*mem /= 2.f;
 	return (n);

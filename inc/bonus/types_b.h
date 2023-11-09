@@ -26,6 +26,18 @@
 # define WIDTH	1600
 # define HEIGHT	900
 
+// Texture errors
+# define E_TLD	"%s tex failed to load!\n"
+# define E_TMX	"Maximum number of textures reached\n"
+// Cubemap errors
+# define E_QGL	"Glob error %s\n"
+# define E_QNF	"%s cubemap tex not found!\n"
+# define E_QLD	"%s cubemap tex failed to load!\n"
+# define E_QWL	"Missing wildcard in filepath '%s'!\n"
+
+# define E_FNC	"Framebuffer is not complete!\n"
+# define E_SDF	"Requested resolution invalid!\nSetting to default %dx%d\n"
+
 typedef struct s_material
 {
 	t_vec3	albedo;
@@ -66,11 +78,18 @@ typedef struct s_scene
 	t_object	lights[MAX_SIZE];
 }	t_scene;
 
+typedef struct s_tex
+{
+	char	path[256];
+	GLuint	id;
+}	t_tex;
+
 typedef struct s_rtx
 {
 	bool	refresh;
 	int		pos[2];
 	int		size[2];
+	char	err[1024];
 	float	yaw;
 	float	pitch;
 	float	start_time;
@@ -80,7 +99,7 @@ typedef struct s_rtx
 	GLuint	buf_a_program;
 	GLuint	image_program;
 	GLuint	framebuffer;
-	GLuint	tex[16];
+	t_tex	tex[16];
 	t_scene	scene;
 	mlx_t	*mlx;
 }	t_rtx;

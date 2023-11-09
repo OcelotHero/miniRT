@@ -12,7 +12,7 @@
 
 #include "parser_b.h"
 
-int	parse_json(t_rtx *rtx, t_material *mat, char *s)
+int	parse_json(t_rtx *rtx, t_material *mat, char *s, int *n)
 {
 	return (1);
 }
@@ -35,13 +35,13 @@ int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 	*sep = '\0';
 	if (n[1] == QMAP)
 	{
-		rtx->tex[0] = setup_cubemap(&s[*n + (s[*n] == '"')]);
+		r = setup_texture(rtx, &s[*n + (s[*n] == '"')], n[1]);
 		*sep = c;
-		return ((sep - &s[*n]) * (rtx->tex[0] != 0));
+		return ((sep - &s[*n] + (c == '"')) * (r != 0));
 	}
-	r = parse_json(rtx, mat, &s[*n + (s[*n] == '"')]);
+	r = parse_json(rtx, mat, &s[*n + (s[*n] == '"')], n);
 	*sep = c;
-	return ((sep - &s[*n]) * !r);
+	return ((sep - &s[*n] + (c == '"')) * !r);
 }
 
 int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
@@ -54,7 +54,7 @@ int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
 	m = *n;
 	while (n[1] != QMAP && --i >= 0)
 	{
-		l = populate_buffer(&s[m], &mat->albedo.e[2 - i], n[1], COLR);
+		l = populate_buffer(&s[m], &mat->albedo.e[2 - i], n[1], 0);
 		if (l <= 0 || (i && s[m + l] != ','))
 			break ;
 		m += l + (i && s[m + l] == ',');
@@ -62,10 +62,10 @@ int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
 	if (n[1] == QMAP || i > -1)
 		m = *n + parse_path(rtx, mat, s, n);
 	else
-		mat->IOR = 1;
+		mat->ior = 1;
 	while (ft_isspace(s[m]))
 		m++;
-	*n += m;
+	*n = m;
 	return (s[*n] != '\0');
 }
 
@@ -98,11 +98,35 @@ int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 							rtx->scene.n_obj - 1, 0)], s, n)) || (i && s[*n])));
 }
 
+int	save_config(t_rtx *rtx, char *s, int n, int type)
+{
+	t_object	o;
+
+	if (type == SIZE && !rtx->size[0] && !rtx->size[1]
+		&& !save_object(rtx, &o, s, (int []){n, type}))
+	{
+		if (o.param[0] < 100 || o.param[0] > 3500
+			|| o.param[1] < 100 || o.param[1] > 3500)
+		{
+			snprintf(rtx->err, 1024, E_SDF, WIDTH, HEIGHT);
+			memcpy(o.param, (float []){WIDTH, HEIGHT}, 2 * sizeof(float));
+		}
+		memcpy(rtx->size, (int []){o.param[0], o.param[1]}, 2 * sizeof(int));
+		return (0);
+	}
+	if (type == QMAP && !rtx->tex[1].id
+		&& !save_object(rtx, &o, s, (int []){n, type}))
+	{
+		rtx->cb_intensity = o.param[3];
+		return (0);
+	}
+	return (-(s[n] && s[n] != '\n'));
+}
+
 int	save_objects(t_rtx *rtx, t_scene *scene, char *s)
 {
-	int			n;
-	int			type;
-	t_object	o;
+	int	n;
+	int	type;
 
 	n = 0;
 	while (ft_isspace(s[n]) && s[n] != '\n')
@@ -111,19 +135,6 @@ int	save_objects(t_rtx *rtx, t_scene *scene, char *s)
 		return (0);
 	type = obj_type(&s[n]);
 	n += (type != 0) + (type == QMAP || type >= PTLGHT);
-	if (type == SIZE && !save_object(rtx, &o, s, (int []){n, type}))
-	{
-		if (o.param[0] < 0 || o.param[0] > 3500
-			|| o.param[1] < 0 || o.param[1] > 3500)
-			memcpy(o.param, (float []){WIDTH, HEIGHT}, 2 * sizeof(float));
-		memcpy(rtx->size, (int []){o.param[0], o.param[1]}, 2 * sizeof(int));
-		return (0);
-	}
-	if (type == QMAP && !save_object(rtx, &o, s, (int []){n, type}))
-	{
-		rtx->cb_intensity = o.param[3];
-		return (0);
-	}
 	if (type == AMBI && !scene->ambient.type)
 		return (save_object(rtx, &scene->ambient, s, (int []){n, type}));
 	if (type == CAMERA && !scene->camera.type)
@@ -138,5 +149,5 @@ int	save_objects(t_rtx *rtx, t_scene *scene, char *s)
 	if (type >= SPHERE && scene->n_obj < MAX_SIZE)
 		return (save_object(rtx, &scene->objects[scene->n_obj++], s,
 				(int []){n, type}));
-	return (-(s[n] && s[n] != '\n'));
+	return (save_config(rtx, s, n, type));
 }

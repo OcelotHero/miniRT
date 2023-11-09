@@ -6,24 +6,24 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/03 22:50:22 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/09 07:23:38 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "get_next_line.h"
+
 #include "maths.h"
 #include "utils.h"
+#include "opengl.h"
 #include "callback.h"
 #include "types_c.h"
 #include "types_b.h"
 #include "parser_c.h"
 #include "parser_b.h"
 
-#include "stb_image.h"
-#include "stb_image_resize.h"
 #include "MLX42/MLX42_Int.h"
 
-#include <glob.h>
-#include <errno.h>
+#include <fcntl.h>
 
 /**
  * Creates, compiles, and returns a shader object of the given type from the
@@ -126,117 +126,6 @@ uint32_t	create_shader_program(const char *vert, const char *frag)
 	glDeleteShader(vshader);
 	glDeleteShader(fshader);
 	return ((success != 0 && vshader && fshader) * program);
-}
-
-#define SP	0x7
-#define PL	0x8
-#define	CY	0x9
-#define	BX	0xa
-#define	CN	0xb
-#define	TR	0xc
-#define	QD	0xd
-#define	DS	0xe
-
-// #define SP	0x00800
-// #define CY	0x02000
-// #define CN	0x04000
-// #define BX	0x08000
-// #define PL	0x01000
-// #define QD	0x10000
-// #define DS	0x20000
-// #define TR	0x40000
-
-void	set_scene_geometry(t_scene *scene)
-{
-	int	n = 0;
-
-	// back wall
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos	= {   0.00f,   0.00f,  -5.00f},
-		.axis	= {  12.60f,   0.00f,  -5.00f},
-		.param	= {   0.00f,  12.60f,  -5.00f,   0.00f}};
-	// floor
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos 	= {   0.00f, -12.45f,   0.00f},
-		.axis	= {  12.60f, -12.45f,   0.00f},
-		.param	= {   0.00f, -12.45f,  -5.00f,   0.00f}};
-	// ceiling
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos 	= {   0.00f,  12.50f,   0.00f},
-		.axis	= {   0.00f,  12.50f,  -5.00f},
-		.param	= {  12.60f,  12.50f,   0.00f,   0.00f}};
-	// left wall
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos	= { -12.50f,   0.00f,   0.00f},
-		.axis	= { -12.50f,  12.60f,   0.00f},
-		.param	= { -12.50f,   0.00f,  -5.00f,   0.00f}};
-	// right wall
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos	= {  12.50f,   0.00f,   0.00f},
-		.axis	= {  12.50f,  12.60f,   0.00f},
-		.param	= {  12.50f,   0.00f,  -5.00f,   0.00f}};
-	// light
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos	= {   0.00f,  12.40f,   0.00f},
-		.axis	= {   5.00f,  12.40f,   0.00f},
-		.param	= {   0.00f,  12.40f,  -2.50f,   0.00f}};
-
-	// picture
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos	= {   0.00f,   0.00f,  -4.90f},
-		.axis	= {   0.00f,   3.50f,  -4.90f},
-		.param	= {   5.50f,   0.00f,  -4.90f,   0.00f}};
-	// strip pattern
-	scene->objects[n++] = (t_object){.type = QD,
-		.pos	= {   0.00f,  -8.50f,  -4.90f},
-		.axis	= {   0.00f,  -5.00f,  -4.90f},
-		.param	= {   5.50f,  -8.50f,  -4.90f,   0.00f}};
-
-	// spheres of varying specular roughness
-	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= { -10.00f,   0.00f,  -3.00f},
-		.param[0]	= 1.75f};
-	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {  -5.00f,   0.00f,  -3.00f},
-		.param[0]	= 1.75f};
-	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   0.00f,   0.00f,  -3.00f},
-		.param[0]	= 1.75f};
-	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   5.00f,   0.00f,  -3.00f},
-		.param[0]	= 1.75f};
-	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {  10.00f,   0.00f,  -3.00f},
-		.param[0]	= 1.75f};
-
-	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f,  -9.90f,   0.00f},
-		.axis		= {   0.00f,   0.90f,   0.00f},
-		.param		= {   2.00f,   2.50f,   0.00f,   0.00f}};
-	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f, -10.00f,  -1.00f},
-		.axis		= {   0.00f,   0.90f,   0.00f},
-		.param		= {   0.50f,   2.00f,   0.00f,   0.00f}};
-	scene->objects[n++] = (t_object){.type = CY,
-		.pos		= {  -7.00f, -10.00f,   1.00f},
-		.axis		= {   0.00f,   0.90f,   0.00f},
-		.param		= {   0.50f,   2.00f,   0.00f,   0.00f}};
-
-	scene->objects[n++] = (t_object){.type = CN,
-		.pos		= {   0.00f,  -8.00f,   0.00f},
-		.axis		= {   0.00f,   0.50f,   0.50f},
-		.param		= {   1.00f,   2.00f,   2.50f,   0.00f}};
-
-	scene->objects[n++] = (t_object){.type = SP,
-		.pos		= {   8.00f,  -8.00f,   2.00f},
-		.param[0]	= 4.f};
-
-	scene->objects[n++] = (t_object){.type = BX,
-		.pos		= {   8.00f,   8.00f,   0.00f},
-		.axis		= {   0.00f,   1.00f,   0.00f},
-		.param		= {   2.00f,   2.50f,   2.00f,  30.00f}};
-
-	scene->n_obj = n;
 }
 
 void	set_scene_material(t_scene *scene)
@@ -344,13 +233,6 @@ void	set_scene_material(t_scene *scene)
 										 .ior = 1.0f};
 }
 
-void	set_scene_light(t_rtx *rtx, t_scene *scene)
-{
-	save_objects(rtx, scene, "A 0.1 229.5,229.5,0");
-	save_objects(rtx, scene, "ls -12.4,-10,0 1,0,0 35 55 1.0 255,229.5,127.5");
-	save_objects(rtx, scene, "lp -12.4,10,0 1.0 25.5,25.5,229.5");
-}
-
 int	move_scene_to_buffer(t_scene *scene)
 {
 	int			i;
@@ -373,10 +255,7 @@ int	setup_and_load_scene(t_rtx *rtx)
 	t_scene	*scene;
 
 	scene = &rtx->scene;
-	save_objects(rtx, scene, "C 0,0,30 0,0,-1 90");
-	set_scene_geometry(scene);
 	set_scene_material(scene);
-	set_scene_light(rtx, scene);
 	move_scene_to_buffer(scene);
 	return (0);
 }
@@ -424,114 +303,6 @@ static int	setup_shader_program(t_rtx *rtx)
 	return (!rtx->buf_a_program || !rtx->image_program);
 }
 
-int	setup_texture(char *path)
-{
-	int		width;
-	int		height;
-	int		channels;
-	GLuint	tex;
-	uint8_t	*data;
-
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	stbi_set_flip_vertically_on_load(true);
-	data = stbi_load(path, &width, &height, &channels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB + (channels == 4), width, height,
-			0, GL_RGB + (channels == 4), GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-		return (printf("%s tex failed to load!\n", path) & 0);
-	stbi_image_free(data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return (tex);
-}
-
-int	setup_cubemap_textures(char *dir, char *path, int *im_prop, uint8_t **data)
-{
-	static char	*faces[] = {"Front", "Back", "Top", "Bottom", "Left", "Right"};
-	int			ret;
-	char		*wild;
-	glob_t		gs;
-
-	wild = strchr(dir, '*');
-	if (!wild)
-		return (printf("Missing wildcard in filepath '%s'!\n", dir));
-	memcpy(path, dir, wild - dir);
-	path[wild - dir] = '\0';
-	sprintf(path, "%s%s.*", path, faces[im_prop[0]]);
-	ret = glob(path, 0, NULL, &gs);
-	if (ret == GLOB_NOMATCH)
-		return (printf("%s cubemap tex not found!\n", path));
-	if (ret)
-		return (printf("Glob error %s\n", strerror(errno)));
-	memcpy(path, gs.gl_pathv[0], strlen(gs.gl_pathv[0]) + 1);
-	globfree(&gs);
-	*data = stbi_load(path, &im_prop[0], &im_prop[1], &im_prop[2], 0);
-	if (!data)
-		return (printf("%s cubemap tex failed to load!\n", path));
-	return (0);
-}
-
-int	setup_cubemap(char *dir)
-{
-	int		i;
-	int		im_prop[3];
-	char	path[512];
-	uint8_t	*data;
-	GLuint	cubemap;
-
-	glGenTextures(1, &cubemap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-	i = -1;
-	while (++i < 6)
-	{
-		im_prop[0] = i;
-		if (setup_cubemap_textures(dir, path, im_prop, &data))
-			return (0);
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-			GL_RGB + (im_prop[2] == 4), im_prop[0], im_prop[1], 0,
-			GL_RGB + (im_prop[2] == 4), GL_UNSIGNED_BYTE, data);
-		stbi_image_free(data);
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	return (cubemap);
-}
-
-int	setup_framebuffer(t_rtx *rtx)
-{
-	GLuint	fbuffer_tex;
-
-	glGenFramebuffers(1, &rtx->framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, rtx->framebuffer);
-	{
-		glGenTextures(1, &fbuffer_tex);
-		glBindTexture(GL_TEXTURE_2D, fbuffer_tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, rtx->size[0], rtx->size[1],
-			0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-			GL_TEXTURE_2D, fbuffer_tex, 0);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			return (printf("Framebuffer is not complete!\n") & 0);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-	return (fbuffer_tex);
-}
-
 int	load_texture(t_rtx *rtx)
 {
 	int		i;
@@ -541,44 +312,102 @@ int	load_texture(t_rtx *rtx)
 	glUniform1i(glGetUniformLocation(rtx->buf_a_program, "framebuffer"), 0);
 	glUniform1i(glGetUniformLocation(rtx->buf_a_program, "skybox"), 1);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, rtx->tex[0]);
+	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, rtx->tex[1]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, rtx->tex[1].id);
 	i = 1;
 	while (++i < 16)
 	{
 		sprintf(buffer, "tex%02d", i);
 		glUniform1i(glGetUniformLocation(rtx->buf_a_program, buffer), i);
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, rtx->tex[i]);
+		glBindTexture(GL_TEXTURE_2D, rtx->tex[i].id);
 	}
 	glUseProgram(rtx->image_program);
 	glUniform1i(glGetUniformLocation(rtx->image_program, "framebuffer"), 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, rtx->tex[0]);
+	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
 	return (0);
 }
 
-int	main(int narg, char *args[])
+int	parse_error(int m, int n, char *line)
 {
-	t_rtx	rtx = {.size = {WIDTH, HEIGHT}};
+	int		i;
+	char	*endl;
+	char	buf[512];
+
+	n *= n > 0;
+	endl = ft_strchr(line, '\n');
+	if (endl)
+	*endl = '\0';
+	i = -1;
+	while (++i < n || ft_isspace(line[i]))
+		buf[i] = ft_isspace(line[i]) * line[i] + !ft_isspace(line[i]) * ' ';
+	ft_memcpy(&buf[i], "^", 2);
+	return (error_msg(E_PRS, m, line, buf));
+}
+
+int	setup_scene(t_rtx *rtx, int fd)
+{
+	int		i;
+	int		n;
+	char	*line;
+
+	i = 0;
+	line = get_next_line(fd);
+	while (line && ++i)
+	{
+		rtx->err[0] = '\0';
+		n = save_objects(rtx, &rtx->scene, line);
+		if (n)
+			parse_error(i, n, line);
+		if (rtx->err[0])
+			error_msg(rtx->err);
+		free(line);
+		if (n)
+		{
+			get_next_line(-fd);
+			return (1);
+		}
+		line = get_next_line(fd);
+	}
+	return (0);
+}
+
+int	setup_config(t_rtx *rtx)
+{
+	if (setup_shader_program(rtx) || !setup_framebuffer(rtx)
+		|| !setup_texture(rtx, "res/textures/Organic4.jpg", 0)
+		|| !setup_texture(rtx, "res/textures/Earthmap.jpg", 0)
+		|| load_texture(rtx) || setup_buffer_objects(rtx))
+		return (1);
+	if (!rtx->size[0] && !rtx->size[1])
+		memcpy(rtx->size, (int []){WIDTH, HEIGHT}, 2 * sizeof(int));
+	return (0);
+}
+
+int	main(int narg, char **args)
+{
+	int		fd;
+	t_rtx	rtx;
 	t_vec3	v;
 
-	rtx.mlx = mlx_init(rtx.size[0], rtx.size[1], "miniRT", true);
-	if (setup_shader_program(&rtx))
-		return (cleanup(&rtx, 1));
-	rtx.tex[0] = setup_framebuffer(&rtx);
-	rtx.tex[1] = setup_cubemap("res/cubemaps/Gallery*");
-	rtx.tex[2] = setup_texture("res/textures/Organic4.jpg");
-	rtx.tex[3] = setup_texture("res/textures/Earthmap.jpg");
-	if (!rtx.tex[0] || !rtx.tex[1] || !rtx.tex[2] || !rtx.tex[3])
-		return (cleanup(&rtx, 1));
-	load_texture(&rtx);
-	if (setup_buffer_objects(&rtx))
-		return (cleanup(&rtx, 1));
+	rtx = (t_rtx){0};
+	if (narg != 2)
+		return (error_msg(E_USG));
+	fd = open(args[1], O_RDONLY);
+	if (fd < 0)
+		return (error_msg(E_OPN, args[1]));
+	rtx.mlx = mlx_init(WIDTH, HEIGHT, "miniRT", true);
+	if (setup_scene(&rtx, fd))
+		return (close(fd), mlx_terminate(rtx.mlx), 1);
+	close(fd);
+	mlx_set_window_size(rtx.mlx, rtx.size[0], rtx.size[1]);
+	if (setup_config(&rtx))
+		return (mlx_terminate(rtx.mlx), 1);
 	v = rtx.scene.camera.axis;
 	rtx.pitch = M_PI_2 - acos(v.y / sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
-	rtx.yaw = ((v.z >= 0) - (v.z < 0)) * acos(v.x / sqrt(v.x * v.x + v.z * v.z));
+	rtx.yaw = ((v.z > 0) - (v.z < 0)) * acos(v.x / sqrt(v.x * v.x + v.z * v.z));
 	mlx_key_hook(rtx.mlx, key_hook, &rtx);
 	mlx_mouse_hook(rtx.mlx, mouse_hook, &rtx);
 	mlx_cursor_hook(rtx.mlx, cursor_hook, &rtx);

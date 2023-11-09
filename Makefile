@@ -14,7 +14,7 @@ SRC_MAN = minirt
 SRC_P_B = parser_b
 SRC_C_B = key_events loop_events mouse_events window_events
 SRC_R_B	=
-SRC_BNS = opengl
+SRC_BNS = opengl texture
 
 # Directories
 SRC_DIR = src

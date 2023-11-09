@@ -66,6 +66,7 @@ void	loop_hook(void *param)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, rtx->size[0] * DENSITY, rtx->size[1] * DENSITY);
 	glUseProgram(rtx->image_program);
-	set_float2(rtx->image_program, "iResolution", rtx->size[0] * DENSITY, rtx->size[1] * DENSITY);
+	set_float2(rtx->image_program, "iResolution",
+		rtx->size[0] * DENSITY, rtx->size[1] * DENSITY);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
