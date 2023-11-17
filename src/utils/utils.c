@@ -12,15 +12,6 @@
 
 #include "utils.h"
 
-#if BNS == 1
-
-int	cleanup(t_rtx *rtx, int errcode)
-{
-	(void)rtx;
-	return (1);
-}
-#endif
-
 int	error_msg(char *format, ...)
 {
 	va_list	args;

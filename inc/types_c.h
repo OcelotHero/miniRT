@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/02 18:18:03 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/17 03:21:58 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,12 @@
 # define RED	"\033[31;1m"
 # define END	"\033[0m"
 
-# define E_USG	"To use run:\n\t./minirt <path_to_scene>\n"
 # define E_OPN	"Unable to open %s\n"
 # define E_PRS	"Error parsing the following line:\n%3d\t%s\n\t"RED"%s"END"\n"
+
+# ifndef BNS
+#  define BNS	0
+# endif
 
 enum e_token_types {
 	INVAL	= (0x0),

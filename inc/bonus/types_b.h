@@ -26,6 +26,8 @@
 # define WIDTH	1600
 # define HEIGHT	900
 
+# define E_USG	"To use run:\n\t./minirt_bonus <path_to_scene>\n"
+
 // Texture errors
 # define E_TLD	"%s tex failed to load!\n"
 # define E_TMX	"Maximum number of textures reached\n"

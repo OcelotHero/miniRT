@@ -14,7 +14,7 @@
 
 int	parse_json(t_rtx *rtx, t_material *mat, char *s, int *n)
 {
-	return (1);
+	return (0);
 }
 
 int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
@@ -27,7 +27,7 @@ int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 	if (*sep == '"')
 		sep = ft_strchr(&s[*n + 1], '"');
 	else
-		while (!ft_isspace(*sep))
+		while (*sep && !ft_isspace(*sep))
 			sep++;
 	if (!sep)
 		return (0);
@@ -94,12 +94,13 @@ int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 	}
 	while (ft_isspace(s[*n]) && (i || !i && s[*n] != '\n'))
 		(*n)++;
-	return (*n * ((!i && save_material(rtx, &rtx->scene.materials[(int)fmax(
-							rtx->scene.n_obj - 1, 0)], s, n)) || (i && s[*n])));
+	return (((i && s[*n]) || (!i && save_material(rtx, &rtx->scene.materials[
+						(int)fmax(rtx->scene.n_obj - 1, 0)], s, n))) * *n);
 }
 
 int	save_config(t_rtx *rtx, char *s, int n, int type)
 {
+	int			r;
 	t_object	o;
 
 	if (type == SIZE && !rtx->size[0] && !rtx->size[1]
@@ -108,17 +109,17 @@ int	save_config(t_rtx *rtx, char *s, int n, int type)
 		if (o.param[0] < 100 || o.param[0] > 3500
 			|| o.param[1] < 100 || o.param[1] > 3500)
 		{
-			snprintf(rtx->err, 1024, E_SDF, WIDTH, HEIGHT);
+			snprintf(rtx->err, sizeof(rtx->err), E_SDF, WIDTH, HEIGHT);
 			memcpy(o.param, (float []){WIDTH, HEIGHT}, 2 * sizeof(float));
 		}
 		memcpy(rtx->size, (int []){o.param[0], o.param[1]}, 2 * sizeof(int));
 		return (0);
 	}
-	if (type == QMAP && !rtx->tex[1].id
-		&& !save_object(rtx, &o, s, (int []){n, type}))
+	if (type == QMAP && !rtx->tex[1].id)
 	{
+		r = save_object(rtx, &o, s, (int []){n, type});
 		rtx->cb_intensity = o.param[3];
-		return (0);
+		return (r);
 	}
 	return (-(s[n] && s[n] != '\n'));
 }

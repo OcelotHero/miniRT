@@ -18,6 +18,8 @@
 
 # define SAMPLE 25
 
+# define E_USG	"To use run:\n\t./minirt <path_to_scene>\n"
+
 typedef struct s_object
 {
 	int		type;

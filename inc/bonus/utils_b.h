@@ -1,20 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   utils_b.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/17 01:21:31 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/17 01:21:36 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#ifndef UTILS_B_H
+# define UTILS_B_H
 
-# include "ft_dprintf.h"
+# include "types_c.h"
+# include "types_b.h"
 
-int	error_msg(char *format, ...);
+void	set_int(uint32_t pg, char *id, int a);
+void	set_float(uint32_t pg, char *id, float a);
+void	set_float2(uint32_t pg, char *id, float a, float b);
 
 #endif

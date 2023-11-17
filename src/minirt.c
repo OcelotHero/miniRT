@@ -69,7 +69,7 @@ int	parse_error(int m, int n, char *line)
 	n *= n > 0;
 	endl = ft_strchr(line, '\n');
 	if (endl)
-	*endl = '\0';
+		*endl = '\0';
 	i = -1;
 	while (++i < n || ft_isspace(line[i]))
 		buf[i] = ft_isspace(line[i]) * line[i] + !ft_isspace(line[i]) * ' ';

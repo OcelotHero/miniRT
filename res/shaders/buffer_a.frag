@@ -113,6 +113,9 @@ layout (std140) uniform Lights {
 	SSpotLight	lights[MAX_SIZE];
 };
 
+// a multiplier for the skybox brightness
+uniform float	skyboxIntensity;
+
 // The minimunm distance a ray must travel before we consider an intersection.
 // This is to prevent a ray from intersecting a surface it just bounced off of.
 const float MINIMUM_DIST = 0.001f;
@@ -123,9 +126,6 @@ const float NORMAL_NUDGE = 0.001f;
 
 // the farthest we look for ray hits
 const float MAXIMUM_DIST = 10000.0f;
-
-// a multiplier for the skybox brightness
-const float SKYBOX_INTENSITY = 1.0f;
 
 // a multiplier for pointlight brightness
 const float POINTLIGHT_INTENSITY = 4000.0f;
@@ -170,7 +170,7 @@ vec3	sRGBToLinear(vec3 rgb) {
 }
 
 // Pseudorandom number generator
-uint rand_pcg(inout uint seed) {
+uint randPCG(inout uint seed) {
 	uint state = seed;
 	seed = seed * 747796405u + 2891336453u;
 	uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
@@ -178,7 +178,7 @@ uint rand_pcg(inout uint seed) {
 }
 
 float randomFloat(inout uint state) {
-	return float(rand_pcg(state)) / 4294967296.0;
+	return float(randPCG(state)) / 4294967296.0;
 }
 
 vec3	randomUnitVector(inout uint state) {
@@ -912,7 +912,7 @@ vec3	rayColor(SRay ray, inout uint rngState) {
 
 		// if the ray missed, we are done and return the background color
 		if (objID < 0 && litID < 0) {
-			color += throughput * SKYBOX_INTENSITY * sRGBToLinear(texture(skybox, ray.dir).rgb);
+			color += throughput * skyboxIntensity * sRGBToLinear(texture(skybox, ray.dir).rgb);
 			break;
 		}
 

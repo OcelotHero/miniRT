@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/09 07:23:38 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/17 00:21:52 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,8 +309,9 @@ int	load_texture(t_rtx *rtx)
 	char	buffer[10];
 
 	glUseProgram(rtx->buf_a_program);
-	glUniform1i(glGetUniformLocation(rtx->buf_a_program, "framebuffer"), 0);
-	glUniform1i(glGetUniformLocation(rtx->buf_a_program, "skybox"), 1);
+	set_int(rtx->buf_a_program, "framebuffer", 0);
+	set_int(rtx->buf_a_program, "skybox", 1);
+	set_float(rtx->buf_a_program, "skyboxIntensity", rtx->cb_intensity);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
 	glActiveTexture(GL_TEXTURE1);
@@ -319,12 +320,12 @@ int	load_texture(t_rtx *rtx)
 	while (++i < 16)
 	{
 		sprintf(buffer, "tex%02d", i);
-		glUniform1i(glGetUniformLocation(rtx->buf_a_program, buffer), i);
+		set_int(rtx->buf_a_program, buffer, i);
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, rtx->tex[i].id);
 	}
 	glUseProgram(rtx->image_program);
-	glUniform1i(glGetUniformLocation(rtx->image_program, "framebuffer"), 0);
+	set_int(rtx->image_program, "framebuffer", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
 	return (0);
@@ -339,7 +340,7 @@ int	parse_error(int m, int n, char *line)
 	n *= n > 0;
 	endl = ft_strchr(line, '\n');
 	if (endl)
-	*endl = '\0';
+		*endl = '\0';
 	i = -1;
 	while (++i < n || ft_isspace(line[i]))
 		buf[i] = ft_isspace(line[i]) * line[i] + !ft_isspace(line[i]) * ' ';

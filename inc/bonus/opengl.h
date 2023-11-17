@@ -23,6 +23,6 @@ int	setup_framebuffer(t_rtx *rtx);
 int	setup_texture(t_rtx *rtx, char *path, int type);
 int	setup_2d_texture(t_rtx *rtx, char *path);
 int	setup_cubemap(t_rtx *rtx, char *dir);
-int	setup_cubemap_texture(char **buf, char *dir, int *prop, uint8_t **im);
+int	setup_cubemap_texture(t_rtx *rtx, char *dir, int *prop, uint8_t **im);
 
 #endif

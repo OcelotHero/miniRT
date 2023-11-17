@@ -13,31 +13,6 @@
 #include "callback.h"
 
 /**
- * Helper function to set OpenGL int uniform value.
- *
- * @param	pg	Specifies the program object to be queried
- * @param	id	The name of the uniform variable whose location is to be queried
- * @param	a	The value to be assigned to the uniform
- */
-static void	set_int(uint32_t pg, char *id, int a)
-{
-	glUniform1i(glGetUniformLocation(pg, id), a);
-}
-
-/**
- * Helper function to set OpenGL vec2 uniform entries.
- *
- * @param	pg	Specifies the program object to be queried
- * @param	id	The name of the uniform variable whose location is to be queried
- * @param	a	The value to be assigned to the first entry of the uniform
- * @param	b	The value to be assigned to the second entry of the uniform
- */
-static void	set_float2(uint32_t pg, char *id, float a, float b)
-{
-	glUniform2f(glGetUniformLocation(pg, id), a, b);
-}
-
-/**
  * Callback function used to render each frame, calling the corresponding shader
  * program and setting up all uniforms needed to render the frame.
  *
