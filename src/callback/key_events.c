@@ -64,9 +64,10 @@ static void	move_camera(t_rtx *rtx, int movement)
 void	key_hook(mlx_key_data_t keydata, void *param)
 {
 	static int	movement = 0;
-
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
-		return (mlx_terminate(((t_rtx *)param)->mlx));
+		mlx_terminate(((t_rtx *)param)->mlx);
+	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
+		exit(0);
 	if ((keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_W)
 		&& (keydata.action == MLX_PRESS || keydata.action == MLX_RELEASE))
 		movement ^= FWD;

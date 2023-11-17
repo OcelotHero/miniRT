@@ -9,7 +9,7 @@ SRC_R_M	= renderer intersection
 SRC_MAN = minirt
 
 # Bonus source files
-SRC_P_B = parser_b
+SRC_P_B = parser_b get_values parser_json json_utils init_vec3 init_vec4
 SRC_C_B = key_events loop_events mouse_events window_events
 SRC_R_B	= opengl texture
 SRC_U_B	= utils_b

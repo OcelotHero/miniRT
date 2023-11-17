@@ -12,10 +12,20 @@
 
 #include "parser_b.h"
 
-int	parse_json(t_rtx *rtx, t_material *mat, char *s, int *n)
-{
-	return (0);
-}
+// int	parse_json(t_rtx *rtx, t_material *mat, char *s, int *n)
+// {
+// 	int			count;
+// 	float		val[3];
+// 	if (get_rgb(s, val) == -1)
+// 	{
+// 		mat->albedo.r = val[0];
+// 		mat->albedo.g = val[1];
+// 		mat->albedo.b = val[2];
+// 	}
+// 	else if (parse_material_data(s, rtx, mat))
+// 		return (1);
+// 	return (0);
+// }
 
 int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 {
@@ -39,7 +49,7 @@ int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 		*sep = c;
 		return ((sep - &s[*n] + (c == '"')) * (r != 0));
 	}
-	r = parse_json(rtx, mat, &s[*n + (s[*n] == '"')], n);
+	r = parse_material_data(&s[*n + (s[*n] == '"')], rtx, mat);
 	*sep = c;
 	return ((sep - &s[*n] + (c == '"')) * !r);
 }

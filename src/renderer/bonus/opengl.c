@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   opengl.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: ykerdel <ykerdel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 05:26:47 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/17 00:21:52 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/17 19:32:57 by ykerdel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,7 +255,7 @@ int	setup_and_load_scene(t_rtx *rtx)
 	t_scene	*scene;
 
 	scene = &rtx->scene;
-	set_scene_material(scene);
+	// set_scene_material(scene);
 	move_scene_to_buffer(scene);
 	return (0);
 }
