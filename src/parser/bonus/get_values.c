@@ -38,29 +38,32 @@ int get_vec4(char *param, t_json_data *data, int default_val, t_vec4 *vec4)
     return (0);
 }
 
-int get_vec3(char *param, t_json_data *data, int default_val, t_vec3 *vec)
+int get_vec3(char *param, t_json_data *data, int default_val, t_vec3 *vec3)
 {
     cJSON    *temp;
 
     temp = cJSON_GetObjectItemCaseSensitive(data->json[1], param);
-// 	if (temp)
-// 	{
-// // dprintf(2, "condition = %d\n", (strcmp("texture", temp->string) && init_vec3_path(temp, data, vec, default_val)));
-// 		if (!strcmp("texture", temp->string) && init_vec3_path(temp, data, vec, default_val))
-// 			return (1);
-// 		else
-// 		{
-// 			if (init_vec3(temp, data, vec, default_val))
-// 				return (1);
-// 			*vec = vec3_scale(1/255.f, *vec);
-// 		}
-// 	}
-// 	else
-// 	{
-		vec->x = default_val;
-		vec->y = default_val;
-		vec->z = default_val;
-	// }
+	if (temp)
+	{
+		if (!strcmp("texture", temp->string))
+		{
+			// if (1)
+			// 	return (1);
+			return (0);
+		}
+		else
+		{
+			if (init_vec3_rgb(temp, data, vec3, default_val))
+				return (1);
+			*vec3 = vec3_scale(1/255.f, *vec3);
+		}
+	}
+	else
+	{
+		vec3->x = default_val;
+		vec3->y = default_val;
+		vec3->z = default_val;
+	}
     return (0);
 }
 
@@ -76,13 +79,13 @@ int get_rgb(char *str, float *val)
 	tmp = tmp + i + 1;
 	i = n_atof(tmp, &val[1]);
 	if (!i || *(tmp + i) != ',')
-		return (tmp - tmp);
+		return (tmp - str);
 	tmp = tmp + i + 1;
 	i = n_atof(tmp, &val[2]);
 	if (!i)
 		return (tmp - str);
 	tmp = tmp + i;
-	while (*tmp && ft_isspace(*tmp) && *tmp != '\n')
+	while (*tmp && isspace(*tmp) && *tmp != '\n')
 		tmp++;
 	if (*tmp != '\0' && *tmp != '\n')
 		return (tmp - str);
@@ -103,7 +106,7 @@ int get_xy(char *str, float *val)
 	if (!i)
 		return (tmp - str);
 	tmp = tmp + i;
-	while (*tmp && ft_isspace(*tmp) && *tmp != '\n')
+	while (*tmp && isspace(*tmp) && *tmp != '\n')
 		tmp++;
 	if (*tmp != '\0' && *tmp != '\n')
 		return (tmp - str);
