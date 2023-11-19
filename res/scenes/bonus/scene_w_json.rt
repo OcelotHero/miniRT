@@ -1,4 +1,4 @@
-R												300	300
+R												1600	900
 
 A														0.1			229.5,229.5,    0
 CB														1.0			res/cubemaps/Gallery*
@@ -21,7 +21,7 @@ qd		    0,  12.4,   0		5,  12.4,   0	    0,  12.4,-2.5	"res/materials/ceiling li
 # Picture frames
 qd		    0,     0,-4.9		0,   3.5,-4.9	  5.5,     0,-4.9	"res/materials/pictures.json:marble"
 qd		    0,  -8.5,-4.9		0,    -5,-4.9	  5.5,  -8.5,-4.9	"res/materials/pictures.json:strip"
-#
+
 # Spheres of varying specular roughness
 sp		  -10,     0,  -3						3.5					res/materials/spheres.json:sp0
 sp		   -5,     0,  -3						3.5					res/materials/spheres.json:sp1

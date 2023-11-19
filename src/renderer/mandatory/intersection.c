@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "renderer.h"
+#include "renderer_m.h"
 
-bool	sp_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
+static bool	sp_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
 {
 	t_vec3	m;
 	float	b;
@@ -39,7 +39,7 @@ bool	sp_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
 	return (true);
 }
 
-bool	pl_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
+static bool	pl_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
 {
 	t_vec3	m;
 	float	a;
@@ -59,7 +59,7 @@ bool	pl_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
 	return (true);
 }
 
-bool	cy_normal(float *in, t_ray r, t_record *rec, t_object *obj)
+static bool	cy_normal(float *in, t_ray r, t_record *rec, t_object *obj)
 {
 	t_vec3	n;
 
@@ -83,7 +83,7 @@ bool	cy_normal(float *in, t_ray r, t_record *rec, t_object *obj)
 	return (true);
 }
 
-bool	cy_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
+static bool	cy_hit(t_ray r, float *t_lim, t_record *rec, t_object *obj)
 {
 	t_vec3	n;
 	t_vec3	m;

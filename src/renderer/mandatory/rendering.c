@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   renderer.c                                         :+:      :+:    :+:   */
+/*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 12:46:13 by rraharja          #+#    #+#             */
-/*   Updated: 2023/10/30 06:10:16 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/19 08:55:03 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "renderer.h"
+#include "renderer_m.h"
 
-void	set_px_color(mlx_image_t *img, t_cam *cam, int *pos, t_vec3 color)
+static void	set_px_color(mlx_image_t *img, t_cam *cam, int *pos, t_vec3 color)
 {
 	uint8_t	*px;
 
@@ -27,7 +27,7 @@ void	set_px_color(mlx_image_t *img, t_cam *cam, int *pos, t_vec3 color)
 	*px = 255;
 }
 
-t_vec3	r_color(t_ray r, t_scene *scene)
+static t_vec3	r_color(t_ray r, t_scene *scene)
 {
 	float		weight;
 	t_ray		s_ray;

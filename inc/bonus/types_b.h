@@ -28,17 +28,33 @@
 
 # define E_USG	"To use run:\n\t./minirt_bonus <path_to_scene>\n"
 
-// Texture errors
+// shader_program errors
+# define E_VSC	"Vertex shader '%s' compilation failed!\n%s\n"
+# define E_FSC	"Fragment shader '%s' compilation failed!\n%s\n"
+
+# define E_FOP	"File open error: %s\n"
+# define E_MLC	"Memory allocation error: %s\n"
+
+# define E_SHL	"ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n"
+
+// texture errors
 # define E_TLD	"%s tex failed to load!\n"
 # define E_TMX	"Maximum number of textures reached\n"
-// Cubemap errors
-# define E_QGL	"Glob error %s\n"
+
+# define E_QGL	"Glob error: %s\n"
 # define E_QNF	"%s cubemap tex not found!\n"
 # define E_QLD	"%s cubemap tex failed to load!\n"
 # define E_QWL	"Missing wildcard in filepath '%s'!\n"
 
-# define E_FNC	"Framebuffer is not complete!\n"
+// parser_b error
 # define E_SDF	"Requested resolution invalid!\nSetting to default %dx%d\n"
+
+// minirt_bonus errors
+# define E_SHP	"Unable to create shader program\n"
+# define E_FNC	"Framebuffer is not complete!\n"
+# define E_BFO	"Unable to generate buffer objects\n"
+
+# define I_SDF	"Resolution not specified\nSetting to default %dx%d\n"
 
 typedef struct s_material
 {

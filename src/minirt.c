@@ -14,17 +14,17 @@
 
 #include "maths.h"
 #include "utils.h"
-#include "renderer.h"
 #include "types_c.h"
 #include "types_m.h"
 #include "parser_c.h"
 #include "parser_m.h"
+#include "renderer_m.h"
 
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 
-void	setup_camera(t_scene *scene, t_cam *cam)
+static void	setup_camera(t_scene *scene, t_cam *cam)
 {
 	float	v_width;
 	float	v_height;
@@ -48,19 +48,16 @@ void	setup_camera(t_scene *scene, t_cam *cam)
 			vec3_scale(.5f, vec3_elem_op(cam->delta_u, '+', cam->delta_v)));
 }
 
-void	key_hook(mlx_key_data_t keydata, void *param)
+static void	key_hook(mlx_key_data_t keydata, void *param)
 {
 	mlx_t		*mlx;
 
 	mlx = (mlx_t *)param;
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
-	{
-		mlx_terminate(mlx);
-		exit(0);
-	}
+		mlx_close_window(mlx);
 }
 
-int	parse_error(int m, int n, char *line)
+static int	parse_error(int m, int n, char *line)
 {
 	int		i;
 	char	*endl;
@@ -71,13 +68,13 @@ int	parse_error(int m, int n, char *line)
 	if (endl)
 		*endl = '\0';
 	i = -1;
-	while (++i < n || ft_isspace(line[i]))
+	while (++i < n || i >= 510 || ft_isspace(line[i]))
 		buf[i] = ft_isspace(line[i]) * line[i] + !ft_isspace(line[i]) * ' ';
 	ft_memcpy(&buf[i], "^", 2);
 	return (error_msg(E_PRS, m, line, buf));
 }
 
-int	setup_scene(t_scene *scene, t_cam *cam, int fd)
+static int	setup_scene(t_scene *scene, t_cam *cam, int fd)
 {
 	int		i;
 	int		n;
@@ -126,4 +123,5 @@ int	main(int narg, char **args)
 	mlx_image_to_window(mlx, img, 0, 0);
 	mlx_key_hook(mlx, key_hook, mlx);
 	mlx_loop(mlx);
+	mlx_terminate(mlx);
 }

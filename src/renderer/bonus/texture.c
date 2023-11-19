@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "opengl.h"
+#include "renderer_b.h"
 
 #include "stb_image.h"
 #include "stb_image_resize.h"
 
-int	setup_2d_texture(t_rtx *rtx, char *path)
+static int	setup_2d_texture(t_rtx *rtx, char *path)
 {
 	int		width;
 	int		height;
@@ -44,7 +44,8 @@ int	setup_2d_texture(t_rtx *rtx, char *path)
 	return (tex);
 }
 
-int	setup_cubemap_texture(t_rtx *rtx, char *dir, int *prop, uint8_t **im)
+static int	setup_cubemap_texture(t_rtx *rtx, char *dir, int *prop,
+		uint8_t **im)
 {
 	static char	*faces[] = {"Front", "Back", "Top", "Bottom", "Left", "Right"};
 	int			ret;
@@ -70,7 +71,7 @@ int	setup_cubemap_texture(t_rtx *rtx, char *dir, int *prop, uint8_t **im)
 	return (0);
 }
 
-int	setup_cubemap(t_rtx *rtx, char *dir)
+static int	setup_cubemap(t_rtx *rtx, char *dir)
 {
 	int		i;
 	int		prop[3];
@@ -121,27 +122,30 @@ int	setup_texture(t_rtx *rtx, char *path, int type)
 	return (0);
 }
 
-int	setup_framebuffer(t_rtx *rtx)
+int	load_texture(t_rtx *rtx)
 {
-	GLuint	fbuffer_tex;
+	int		i;
+	char	buffer[10];
 
-	glGenFramebuffers(1, &rtx->framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, rtx->framebuffer);
+	glUseProgram(rtx->buf_a_program);
+	set_int(rtx->buf_a_program, "framebuffer", 0);
+	set_int(rtx->buf_a_program, "skybox", 1);
+	set_float(rtx->buf_a_program, "skyboxIntensity", rtx->cb_intensity);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, rtx->tex[1].id);
+	i = 1;
+	while (++i < 16)
 	{
-		glGenTextures(1, &fbuffer_tex);
-		glBindTexture(GL_TEXTURE_2D, fbuffer_tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, rtx->size[0], rtx->size[1],
-			0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-			GL_TEXTURE_2D, fbuffer_tex, 0);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			return (snprintf(rtx->err, sizeof(rtx->err), E_FNC) & 0);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		sprintf(buffer, "tex%02d", i);
+		set_int(rtx->buf_a_program, buffer, i);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, rtx->tex[i].id);
 	}
-	rtx->tex[0].id = fbuffer_tex;
-	return (1);
+	glUseProgram(rtx->image_program);
+	set_int(rtx->image_program, "framebuffer", 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
+	return (0);
 }

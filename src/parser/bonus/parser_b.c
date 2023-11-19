@@ -12,22 +12,7 @@
 
 #include "parser_b.h"
 
-// int	parse_json(t_rtx *rtx, t_material *mat, char *s, int *n)
-// {
-// 	int			count;
-// 	float		val[3];
-// 	if (get_rgb(s, val) == -1)
-// 	{
-// 		mat->albedo.r = val[0];
-// 		mat->albedo.g = val[1];
-// 		mat->albedo.b = val[2];
-// 	}
-// 	else if (parse_material_data(s, rtx, mat))
-// 		return (1);
-// 	return (0);
-// }
-
-int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
+static int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 {
 	int		r;
 	char	c;
@@ -54,7 +39,7 @@ int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 	return ((sep - &s[*n] + (c == '"')) * !r);
 }
 
-int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
+static int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
 {
 	int	i;
 	int	l;
@@ -79,7 +64,7 @@ int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
 	return (s[*n] != '\0');
 }
 
-int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
+static int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 {
 	int	i;
 	int	j;
@@ -108,7 +93,7 @@ int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 						(int)fmax(rtx->scene.n_obj - 1, 0)], s, n))) * *n);
 }
 
-int	save_config(t_rtx *rtx, char *s, int n, int type)
+static int	save_config(t_rtx *rtx, char *s, int n, int type)
 {
 	int			r;
 	t_object	o;
@@ -120,9 +105,9 @@ int	save_config(t_rtx *rtx, char *s, int n, int type)
 			|| o.param[1] < 100 || o.param[1] > 3500)
 		{
 			snprintf(rtx->err, sizeof(rtx->err), E_SDF, WIDTH, HEIGHT);
-			memcpy(o.param, (float []){WIDTH, HEIGHT}, 2 * sizeof(float));
+			ft_memcpy(o.param, (float []){WIDTH, HEIGHT}, 2 * sizeof(float));
 		}
-		memcpy(rtx->size, (int []){o.param[0], o.param[1]}, 2 * sizeof(int));
+		ft_memcpy(rtx->size, (int []){o.param[0], o.param[1]}, 2 * sizeof(int));
 		return (0);
 	}
 	if (type == QMAP && !rtx->tex[1].id)

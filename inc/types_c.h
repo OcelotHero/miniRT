@@ -6,7 +6,7 @@
 /*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/17 03:21:58 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/19 11:04:15 by rraharja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@
 # define END	"\033[0m"
 
 # define E_OPN	"Unable to open %s\n"
-# define E_PRS	"Error parsing the following line:\n%3d\t%s\n\t"RED"%s"END"\n"
+# define E_PRS	"Error parsing the following line:\n%3d\t%s\n\tRED%sEND\n"
 
 # ifndef BNS
 #  define BNS	0

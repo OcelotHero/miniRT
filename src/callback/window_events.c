@@ -28,6 +28,6 @@ void	resize_hook(int32_t width, int32_t height, void *param)
 	memcpy(rtx->size, (int []){width, height}, 2 * sizeof(int));
 	glBindTexture(GL_TEXTURE_2D, rtx->tex[0].id);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, rtx->size[0], rtx->size[1],
-			0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	rtx->refresh = true;
 }

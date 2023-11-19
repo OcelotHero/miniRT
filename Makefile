@@ -5,15 +5,15 @@ SRC_UTL = utils
 
 # Mandatory source files
 SRC_P_M = parser_m
-SRC_R_M	= renderer intersection
+SRC_R_M	= rendering intersection
 SRC_MAN = minirt
 
 # Bonus source files
 SRC_P_B = parser_b get_values parser_json json_utils init_vec3 init_vec4
 SRC_C_B = key_events loop_events mouse_events window_events
-SRC_R_B	= opengl texture
+SRC_R_B	= data_prep shader_program texture
 SRC_U_B	= utils_b
-SRC_BNS =
+SRC_BNS = minirt_bonus
 
 # Conditional recompilation source files
 SRC_REC = parser_c
@@ -84,6 +84,8 @@ CC		= cc
 FLAGS	= -g -O0 -MMD -MP #-Wall -Wextra -Werror
 RM		= rm -rf
 
+CFLAG	= -D BNS=${BNS}
+
 OSNAME	= $(shell uname -s)
 
 ifeq ($(shell test -d "/Users/${USER}/.brew"; echo $$?), 1)
@@ -102,18 +104,19 @@ endif
 
 all:		${NAME_M}
 
-${NAME_M}:	FLAGS += -D BNS=0 -I ${INCL}/${MAN_DIR}
+${NAME_M}:	BNS = 0
+${NAME_M}:	FLAGS += -I ${INCL}/${MAN_DIR}
 ${NAME_M}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${OBJS} ${OBJS_R} ${OBJS_M}
-			@if [ -f ${NAME_B} ]; then ${RM} ${OBJS_R}; make ${OBJS_R}; fi
+			@if [ -f ${NAME_B} ]; then ${RM} ${OBJS_R}; make ${OBJS_R} BNS=0; fi
 			@echo "    ${NAME_M}"
 			@${CC} ${FLAGS} ${OBJS} ${OBJS_R} ${OBJS_M} ${MLX42_L} ${LIBFT_L} \
-				${FPRNF_L} -o ${NAME_M} ${OPTS}
+				${FPRNF_L} -o ${NAME_M} ${OPTS} ${CFLAG}
 
 ${OBJ_DIR}/%.o: %.c | ${OBJ_DIR}
 			@echo "    $<"
 			@${CC} ${FLAGS} -c $< -o $@ -I ${INCL} -I ${LIB_DIR}/${FPRNF_D}/${INCL} \
 				-I ${LIB_DIR}/${LIBFT_D}/${INCL} -I ${LIB_DIR}/${MLX42_D}/include \
-				-I ${LIB_DIR}/${CJSON_D} -I lib/stb_image
+				-I ${LIB_DIR}/${CJSON_D} -I lib/stb_image ${CFLAG}
 
 ${OBJ_DIR}:
 			@mkdir -p ${OBJ_DIR}
@@ -150,12 +153,13 @@ fclean:		clean
 
 bonus:		${NAME_B}
 
-${NAME_B}:	FLAGS += -D BNS=1 -I ${INCL}/${BNS_DIR}
+${NAME_B}:	BNS = 1
+${NAME_B}:	FLAGS += -I ${INCL}/${BNS_DIR}
 ${NAME_B}:	${LIBFT_L} ${FPRNF_L} ${MLX42_L} ${CJSON_L} ${OBJS} ${OBJS_R} ${OBJS_B}
-			@if [ -f ${NAME_M} ]; then ${RM} ${OBJS_R}; make ${OBJS_R}; fi
+			@if [ -f ${NAME_M} ]; then ${RM} ${OBJS_R}; make ${OBJS_R} BNS=1; fi
 			@echo "    ${NAME_B}"
 			@${CC} ${FLAGS} ${OBJS} ${OBJS_R} ${OBJS_B} ${MLX42_L} ${LIBFT_L} \
-				${FPRNF_L} ${CJSON_L} -o ${NAME_B} ${OPTS}
+				${FPRNF_L} ${CJSON_L} -o ${NAME_B} ${OPTS} ${CFLAG}
 
 re:			fclean all
 

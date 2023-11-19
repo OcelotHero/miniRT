@@ -12,7 +12,7 @@
 
 #include "parser_m.h"
 
-int	save_object(t_object *obj, char *s, int *n)
+static int	save_object(t_object *obj, char *s, int *n)
 {
 	int	i;
 	int	j;

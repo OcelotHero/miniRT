@@ -13,10 +13,9 @@
 #ifndef PARSER_M_H
 # define PARSER_M_H
 
-#include "parser_c.h"
-#include "types_m.h"
+# include "parser_c.h"
+# include "types_m.h"
 
-int	save_object(t_object *obj, char *s, int *n);
 int	save_objects(t_scene *scene, char *str);
 
 #endif
