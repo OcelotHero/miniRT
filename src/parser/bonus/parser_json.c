@@ -2,39 +2,39 @@
 #include "parser_b.h"
 
 #include <string.h>
-void print_material(const t_material *material, char *file, char *obj)
-{
-    if (1 && 1)
-    {
-        printf("____________________________________________________________________\n");
-        printf("\n>> %s : %s\n\n", file, obj);
+// void print_material(const t_material *material, char *file, char *obj)
+// {
+//     if (1 && 1)
+//     {
+//         printf("____________________________________________________________________\n");
+//         printf("\n>> %s : %s\n\n", file, obj);
         
-        // floats
-        printf("Intensity:                 %f\n", material->intensity);
-        printf("Specular Roughness:        %f\n", material->spec_roughness);
-        printf("Specular Chance:           %f\n", material->spec_chance);
-        printf("Refractive Chance:         %f\n", material->refr_chance);
-        printf("Refractive Roughness:      %f\n", material->refr_roughness);
-        printf("IOR:                       %f\n", material->ior);
+//         // floats
+//         printf("Intensity:                 %f\n", material->intensity);
+//         printf("Specular Roughness:        %f\n", material->spec_roughness);
+//         printf("Specular Chance:           %f\n", material->spec_chance);
+//         printf("Refractive Chance:         %f\n", material->refr_chance);
+//         printf("Refractive Roughness:      %f\n", material->refr_roughness);
+//         printf("IOR:                       %f\n", material->ior);
 
-        // vec_3
-        printf("\n");
-        printf("Albedo:                   (%f, %f, %f)\n", material->albedo.r, material->albedo.g, material->albedo.b);
-        printf("Emissive:                 (%f, %f, %f)\n", material->emissive.r, material->emissive.g, material->emissive.b);
-        printf("Specular Color:           (%f, %f, %f)\n", material->spec_color.r, material->spec_color.g, material->spec_color.b);
-        printf("Refractive Color:         (%f, %f, %f)\n", material->refr_color.r, material->refr_color.g, material->refr_color.b);
-        printf("Texture:                  (%f, %f, %f)\n", material->texture.r, material->texture.g, material->texture.b);
+//         // vec_3
+//         printf("\n");
+//         printf("Albedo:                   (%f, %f, %f)\n", material->albedo.r, material->albedo.g, material->albedo.b);
+//         printf("Emissive:                 (%f, %f, %f)\n", material->emissive.r, material->emissive.g, material->emissive.b);
+//         printf("Specular Color:           (%f, %f, %f)\n", material->spec_color.r, material->spec_color.g, material->spec_color.b);
+//         printf("Refractive Color:         (%f, %f, %f)\n", material->refr_color.r, material->refr_color.g, material->refr_color.b);
+//         printf("Texture:                  (%f, %f, %f)\n", material->texture.r, material->texture.g, material->texture.b);
         
-        // vec_4
-        printf("\n");
-        printf("Normal Map:               (%f, %f, %f, %f)\n", material->normal_map.x, material->normal_map.y, material->normal_map.z, material->normal_map.w);
+//         // vec_4
+//         printf("\n");
+//         printf("Normal Map:               (%f, %f, %f, %f)\n", material->normal_map.x, material->normal_map.y, material->normal_map.z, material->normal_map.w);
         
-        // float[3]
-        printf("\n");
-        printf("Pad:                      [%f, %f, %f]\n", material->pad[0], material->pad[1], material->pad[2]);
-        printf("\n");
-    }
-}
+//         // float[3]
+//         printf("\n");
+//         printf("Pad:                      [%f, %f, %f]\n", material->pad[0], material->pad[1], material->pad[2]);
+//         printf("\n");
+//     }
+// }
 
 static char *zbimbo(FILE *file)
 {
@@ -71,8 +71,6 @@ static char *read_file(const char *filename)
 
 int init_obj(t_json_data *data, cJSON **material_json, t_rtx *rtx, t_material *mat)
 {
-    cJSON       *temp;
-
     if (get_float(data, "intensity", &mat->intensity, 1)
             || get_float(data, "specularRoughness", &mat->spec_roughness, 0)
             || get_float(data, "specularChance", &mat->spec_chance, 0)
@@ -80,9 +78,9 @@ int init_obj(t_json_data *data, cJSON **material_json, t_rtx *rtx, t_material *m
             || get_float(data, "refractionRoughness", &mat->refr_roughness, 0)
             || get_float(data, "IOR", &mat->ior, 1))
         return (1);
-    if (get_vec3("albedo", data, 255 * (cJSON_GetObjectItemCaseSensitive(material_json[1], "texture") != 0), &mat->albedo)
-            || get_vec3("emmisive", data, 0, &mat->emissive)
-            || get_vec3("specularColor", data, 255 * (cJSON_GetObjectItemCaseSensitive(material_json[1], "texture") != 0), &mat->spec_color)
+    if (get_vec3("albedo", data, 1 * (cJSON_GetObjectItemCaseSensitive(material_json[1], "texture") != 0), &mat->albedo)
+            || get_vec3("emissive", data, 0, &mat->emissive)
+            || get_vec3("specularColor", data, 1 * (cJSON_GetObjectItemCaseSensitive(material_json[1], "texture") != 0), &mat->spec_color)
             || get_vec3("refractionColor", data, 0, &mat->refr_color)
             || get_vec3("texture", data, 0, &mat->texture)
             || get_vec4("normalMap", data, 0, &mat->normal_map))
@@ -129,6 +127,6 @@ int parse_material_data(char *str, t_rtx *rtx, t_material *mat)
     data.index = 0;
     if (init_json(&data, rtx, mat))
         return (1);
-	print_material(mat, data.file, data.obj);
+	// print_material(mat, data.file, data.obj);
     return (0);
 }

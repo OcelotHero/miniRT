@@ -66,7 +66,7 @@ int error_handler(t_json_data *data, cJSON *line, int index, char *type)
     else if (cJSON_IsNumber(line))
         tmp += sprintf(tmp, "%f\n        ", line->valuedouble) - 1 - i;
     i = -1;
-    index += ft_strlen(line->string) + 3;
+    index += strlen(line->string) + 3;
     while (i++ < index)
         tmp[i] = ' ';
     tmp = memcpy(tmp + i, "\x1b[32m^\n\x1b[0m", 14);

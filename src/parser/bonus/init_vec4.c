@@ -40,11 +40,11 @@ static int w_delim(cJSON *temp, t_json_data *data, t_vec4 *vec4, int default_val
 		vec4->x = val[0];
 		vec4->y = val[1];
 		vec4->z = val[2];
-		return (0);
+		return (free(dup), 0);
 	}
 	else
 		return (free(dup), error_handler(data, temp, strlen(dup) + index, "Invalid character"));
-	return (0);
+	return (free(dup), 0);
 }
 
 int init_vec4(cJSON *temp, t_json_data *data, t_vec4 *vec4, int default_val)
@@ -70,6 +70,6 @@ int init_vec4(cJSON *temp, t_json_data *data, t_vec4 *vec4, int default_val)
 	if (vec4->z < 0)
         return (error_handler(data, temp, strrchr(delim, ',') - temp->valuestring + 2, "Invalid value"));
 	if (!vec4->w)
-        return (error_handler(data, temp, 0, "Invalid value"));
+        return (error_handler(data, temp, 0, "Invalid value")); 
     return (0);
 }

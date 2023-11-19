@@ -45,11 +45,11 @@ int get_vec3(char *param, t_json_data *data, int default_val, t_vec3 *vec3)
     temp = cJSON_GetObjectItemCaseSensitive(data->json[1], param);
 	if (temp)
 	{
+
 		if (!strcmp("texture", temp->string))
 		{
-			// if (1)
-			// 	return (1);
-			return (0);
+			if (init_vec3_path(temp, data, vec3, default_val))
+				return (1);
 		}
 		else
 		{
@@ -85,14 +85,14 @@ int get_rgb(char *str, float *val)
 	if (!i)
 		return (tmp - str);
 	tmp = tmp + i;
-	while (*tmp && isspace(*tmp) && *tmp != '\n')
+	while (*tmp && ft_isspace(*tmp) && *tmp != '\n')
 		tmp++;
 	if (*tmp != '\0' && *tmp != '\n')
 		return (tmp - str);
 	return (-1);
 }
 
-int get_xy(char *str, float *val)
+int get_uv(char *str, float *val)
 {
 	int i;
 	char *tmp;
@@ -106,24 +106,38 @@ int get_xy(char *str, float *val)
 	if (!i)
 		return (tmp - str);
 	tmp = tmp + i;
-	while (*tmp && isspace(*tmp) && *tmp != '\n')
+	while (*tmp && ft_isspace(*tmp) && *tmp != '\n')
 		tmp++;
 	if (*tmp != '\0' && *tmp != '\n')
 		return (tmp - str);
 	return (-1);
 }
 
+// int get_path(char *path, t_json_data *data)
+// {
+// 	int tmp;
+// 	tmp = setup_texture(data->rtx, path, 0);
+// 	if (!tmp)
+// 	{
+// 		if (!strcmp("checkered", path))
+// 			return (-1);
+// 		if (!strcmp("meta", path))
+// 			return (1);
+// 		return (-2);
+// 	}
+// 	return (tmp);
+// }
+
 int get_path(char *path, t_json_data *data)
 {
 	int tmp;
+
+	if (!strcmp("checkered", path))
+		return (-1);
+	if (!strcmp("meta", path))
+		return (1);
 	tmp = setup_texture(data->rtx, path, 0);
-	if (!tmp)
-	{
-		if (!strcmp("checkered", path))
-			return (-1);
-		if (!strcmp("meta", path))
-			return (1);
-		return (-2);
-	}
-	return (tmp);
+	if (tmp)
+		return (tmp);
+	return (-2);
 }

@@ -38,11 +38,11 @@ int get_float(t_json_data *data, char *param, float *value, float default_value)
 int get_vec4(char *param, t_json_data *data, int default_val, t_vec4 *vec);
 int get_vec3(char *param, t_json_data *data, int default_val, t_vec3 *vec);
 int get_rgb(char *str, float *val);
-int get_xy(char *str, float *val);
+int get_uv(char *str, float *val);
 int get_path(char *path, t_json_data *data);
 
 int init_vec3_rgb(cJSON *temp, t_json_data *data, t_vec3 *vec3, float default_val);
-// int init_vec3_path(cJSON *temp, t_json_data *data, t_vec3 *vec3, float default_val);
+int init_vec3_path(cJSON *temp, t_json_data *data, t_vec3 *vec3, float default_val);
 
 int init_vec4(cJSON *temp, t_json_data *data, t_vec4 *vec4, int default_val);
 
