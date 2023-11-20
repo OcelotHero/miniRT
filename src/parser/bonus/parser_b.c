@@ -22,7 +22,7 @@ static int	parse_path(t_rtx *rtx, t_material *mat, char *s, int *n)
 	if (*sep == '"')
 		sep = ft_strchr(&s[*n + 1], '"');
 	else
-		while (*sep && !ft_isspace(*sep))
+		while (*sep && !isspace(*sep))
 			sep++;
 	if (!sep)
 		return (0);
@@ -58,7 +58,7 @@ static int	save_material(t_rtx *rtx, t_material *mat, char *s, int *n)
 		m = *n + parse_path(rtx, mat, s, n);
 	else
 		mat->ior = 1;
-	while (ft_isspace(s[m]))
+	while (isspace(s[m]))
 		m++;
 	*n = m;
 	return (s[*n] != '\0');
@@ -87,7 +87,7 @@ static int	save_object(t_rtx *rtx, t_object *obj, char *s, int *n)
 			*n += l + (j && s[*n + l] == ',');
 		}
 	}
-	while (ft_isspace(s[*n]) && (i || !i && s[*n] != '\n'))
+	while (isspace(s[*n]) && (i || !i && s[*n] != '\n'))
 		(*n)++;
 	return (((i && s[*n]) || (!i && save_material(rtx, &rtx->scene.materials[
 						(int)fmax(rtx->scene.n_obj - 1, 0)], s, n))) * *n);
@@ -125,7 +125,7 @@ int	save_objects(t_rtx *rtx, t_scene *scene, char *s)
 	int	type;
 
 	n = 0;
-	while (ft_isspace(s[n]) && s[n] != '\n')
+	while (isspace(s[n]) && s[n] != '\n')
 		n++;
 	if (s[n] == '#')
 		return (0);
