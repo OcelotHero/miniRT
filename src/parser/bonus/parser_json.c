@@ -1,6 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_json.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ykerdel <ykerdel@student.42heilbronn.de    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/22 21:59:17 by ykerdel           #+#    #+#             */
+/*   Updated: 2023/11/22 22:33:53 by ykerdel          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "parser_b.h"
-#include <string.h>
 
 static char	*exit_read(FILE *file)
 {
@@ -64,17 +74,20 @@ int	init_json(t_json_data *data, t_rtx *rtx, t_material *mat)
 	material_json[0] = cJSON_Parse(data->line);
 	if (!material_json[0])
 		return (1);
-	if (data->obj)
-		material_json[1] = cJSON_GetObjectItem(material_json[0], data->obj);
+	if (data->obj && cJSON_GetObjectItemCaseSensitive(material_json[0],
+			data->obj))
+		material_json[1] = cJSON_GetObjectItemCaseSensitive(material_json[0],
+				data->obj);
 	else
+	{
+		if (data->obj)
+			printf("\x1b[33mobject '%s' will be set to default\x1b[0m\n",
+				data->obj);
 		material_json[1] = material_json[0];
+	}
 	data->json = material_json;
 	if (init_obj(data, material_json, rtx, mat))
-	{
-		free(data->line);
-		cJSON_Delete(material_json[0]);
-		return (1);
-	}
+		return (free(data->line), cJSON_Delete(material_json[0]), 1);
 	free(data->line);
 	cJSON_Delete(material_json[0]);
 	return (0);

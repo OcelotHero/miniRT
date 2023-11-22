@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   types_c.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rraharja <rraharja@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: ykerdel <ykerdel@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 09:35:18 by rraharja          #+#    #+#             */
-/*   Updated: 2023/11/19 11:04:15 by rraharja         ###   ########.fr       */
+/*   Updated: 2023/11/22 22:13:36 by ykerdel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,12 @@
 # define AXIS	NORM
 # define NRML	NORM
 
-# define RED	"\033[31;1m"
-# define END	"\033[0m"
+# define RED	""
+# define END	""
 
 # define E_OPN	"Unable to open %s\n"
-# define E_PRS	"Error parsing the following line:\n%3d\t%s\n\tRED%sEND\n"
+# define E_PRS	"Error parsing the following line:\n%3d\t%s\n\t\033[31;1m%s\
+\033[0m\n"
 
 # ifndef BNS
 #  define BNS	0

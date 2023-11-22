@@ -139,10 +139,10 @@ const float ATTENUATION_COMPENSATION = 48.0f;
 const float ATTENUATION_COMPENSATION_PBR = 128.0f;
 
 // number of ray bounces allowed
-const int NUM_BOUNCES = 16;
+const int NUM_BOUNCES = 8;
 
 // how many renders per frame - to get around the vsync limitation.
-const int NUM_RENDER = 8;
+const int NUM_RENDER = 1;
 
 // whether to use PBR shading on geometries illuminated by point light
 const bool PBR = true;
